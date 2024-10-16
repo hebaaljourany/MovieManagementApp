@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>MovieManagementApp</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MovieManagementApp.Domain\MovieManagementApp.Domain.csproj" />
+    <ProjectReference Include="..\MovieManagementApp.Application.Contracts\MovieManagementApp.Application.Contracts.csproj" />
+    <ProjectReference Include="..\MovieManagementApp.EntityFrameworkCore\MovieManagementApp.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Account.Application" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.Identity.Application" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Application" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.TenantManagement.Application" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.Application" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.SettingManagement.Application" Version="6.0.0" />
+  </ItemGroup>
+
+</Project>

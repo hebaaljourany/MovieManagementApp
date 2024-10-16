@@ -1,0 +1,84 @@
+<div class="add-movie-container">
+  <h2>Create New Movie</h2>
+  
+  <form [formGroup]="movieForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Movie Title -->
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input id="title" type="text" formControlName="title" class="form-control" placeholder="Movie Title" />
+    </div>
+
+    <!-- Duration -->
+    <div class="form-group">
+      <label for="duration">Duration (in minutes)</label>
+      <input id="duration" type="number" formControlName="duration" class="form-control" placeholder="Movie Duration" />
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" formControlName="description" class="form-control" placeholder="Movie Description"></textarea>
+    </div>
+
+    <!-- Age Rating -->
+    <div class="form-group">
+      <label for="ageRating">Age Rating</label>
+      <input id="ageRating" type="text" formControlName="ageRating" class="form-control" placeholder="Age Rating" />
+    </div>
+
+    <!-- Release Date -->
+    <div class="form-group">
+      <label for="releaseDate">Release Date</label>
+      <input id="releaseDate" type="date" formControlName="releaseDate" class="form-control" />
+    </div>
+
+    <!-- Poster URL -->
+    <div class="form-group">
+      <label for="posterUrl">Poster URL</label>
+      <input id="posterUrl" type="url" formControlName="posterUrl" class="form-control" placeholder="Poster URL" />
+    </div>
+
+    <!-- Video URL -->
+    <div class="form-group">
+      <label for="videoUrl">Video URL</label>
+      <input id="videoUrl" type="url" formControlName="videoUrl" class="form-control" placeholder="Video URL" />
+    </div>
+
+   <!-- Actors Selection -->
+<div>
+    <label for="actorSearch">Actors</label>
+    <input id="actorSearch" formControlName="actorSearchTerm" (input)="searchActors()" placeholder="Search for actors..." />
+    <ul *ngIf="(filteredActors$ | async) as actors">
+      <li *ngFor="let actor of actors" (click)="addActor(actor)">
+        {{ actor.actorName }}
+      </li>
+    </ul>
+    <div *ngFor="let actor of selectedActors">
+      {{ actor.actorName }} <button (click)="removeActor(actor)">Remove</button>
+    </div>
+  </div>
+  
+  <!-- Categories Selection -->
+  <div>
+    <label for="categorySearch">Categories</label>
+    <input id="categorySearch" formControlName="categorySearchTerm" (input)="searchCategories()" placeholder="Search for categories..." />
+    <ul *ngIf="(filteredCategories$ | async) as categories">
+      <li *ngFor="let category of categories" (click)="addCategory(category)">
+        {{ category.categoryName }}
+      </li>
+    </ul>
+    <div *ngFor="let category of selectedCategories">
+      {{ category.categoryName }} <button (click)="removeCategory(category)">Remove</button>
+    </div>
+  </div>
+  
+
+
+    <!-- Submit Buttons -->
+    <div class="form-buttons">
+      <button type="submit" class="btn btn-primary" [disabled]="movieForm.invalid">Save Movie</button>
+      <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+    </div>
+  </form>
+</div>

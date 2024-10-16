@@ -1,0 +1,18 @@
+<div class="movie-card" (click)="goToMovieDetails()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+  <div class="poster">
+    <img [src]="movie.posterUrl" alt="{{ movie.title }}">
+  </div>
+
+  <div class="movie-info" *ngIf="isHovered">
+    <h5>{{ movie.title }}</h5>
+
+    <div class="buttons">
+      <button class="btn-circle play-btn" (click)="playMovie($event)">
+        <i class="fa fa-play"></i>
+      </button>
+      <button class="btn-circle list-btn" (click)="toggleMovieInList($event)">
+        <i class="fa" [ngClass]="isInList ? 'fa-check' : 'fa-plus'"></i>
+      </button>
+    </div>
+  </div>
+</div>

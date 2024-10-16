@@ -1,0 +1,47 @@
+
+<div class="card">
+  <div class="card-header">
+    <div class="row">
+      <div class="col col-md-6">
+       
+      </div>        
+      <div class="text-end col col-md-6">
+          
+        <!-- Add the "new city" button here -->
+        <div class="add-movie-btn-container">
+          <button id="create" class="btn btn-primary" type="button" (click)="navigateToAddMovie()">
+            
+            <i class="fa fa-plus mr-1"></i>
+            <span>{{ "::AddNewMovie" | abpLocalization }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div class="card-body" *ngIf="!isLoading" >
+        <!--<ngx-datatable [rows]="city.items" [count]="city.totalCount" [list]="list" default>-->
+        <!-- Loading indicator -->
+        <div *ngIf="isLoading" class="loading-spinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        
+              <!-- Movies grid -->
+        <div class="movies-grid" *ngIf="!isLoading">
+          <app-movie-card 
+            *ngFor="let movie of movie.items"
+            [movie]="movie">
+          </app-movie-card>
+        </div>
+
+        <!-- No movies message -->
+        <div *ngIf="!isLoading && movie.totalCount === 0" class="no-movies-message">
+          No movies available. Please add a new movie.
+        </div>
+      <!--</ngx-datatable>-->
+    </div>
+    
+  </div>
+  
+<p>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</p>

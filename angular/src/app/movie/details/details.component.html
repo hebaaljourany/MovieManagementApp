@@ -1,0 +1,78 @@
+<div class="movie-card">
+  <div class="container">
+  <div *ngIf="movie && actors && categories; else loading">
+    <a href="#"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/hobbit_cover.jpg" alt="cover" class="cover" /></a>
+
+    <div class="hero">
+      <button class="delete-btn" (click)="deleteMovie()">
+        <i class="fa fa-trash"></i>
+      </button>
+      <button class="edit-btn" (click)="navigateToUpdate()">
+        <i class="fa fa-pencil"></i>
+      </button>
+
+    <div class="details">
+
+      <div class="title1">{{ movie.title }} <span>{{ movie.ageRating }}</span></div>
+
+
+      <fieldset class="rating">
+        <!-- تلوين النجوم بناءً على تقييم المستخدم -->
+        <input type="radio" id="star5" name="rating" value="5" [checked]="userRating === 5" (change)="rateMovie(5)" /><label class="full" for="star5" title="Awesome - 5 stars"></label>
+        <input type="radio" id="star4" name="rating" value="4" [checked]="userRating === 4" (change)="rateMovie(4)" /><label class="full" for="star4" title="Pretty good - 4 stars"></label>
+        <input type="radio" id="star3" name="rating" value="3" [checked]="userRating === 3" (change)="rateMovie(3)" /><label class="full" for="star3" title="Meh - 3 stars"></label>
+        <input type="radio" id="star2" name="rating" value="2" [checked]="userRating === 2" (change)="rateMovie(2)" /><label class="full" for="star2" title="Kinda bad - 2 stars"></label>
+        <input type="radio" id="star1" name="rating" value="1" [checked]="userRating === 1" (change)="rateMovie(1)" /><label class="full" for="star1" title="Sucks big time - 1 star"></label>
+      </fieldset>
+      
+      <!-- إذا كانت القيمة صفر، النجوم تكون رمادية -->
+      <div *ngIf="userRating === 0" class="no-rating">
+        <label class="full" for="star5"></label>
+        <label class="full" for="star4"></label>
+        <label class="full" for="star3"></label>
+        <label class="full" for="star2"></label>
+        <label class="full" for="star1"></label>
+      </div>
+
+    <!-- Display movie stats: views, downloads, and average rating -->
+    <div class="likes">
+      <span>{{ totalViews }} views</span> | <span>{{ totalDownloads }} downloads</span> | 
+      <span>Average Rating: {{ averageRating }}/5</span>
+    </div>
+    </div> <!-- end details -->
+
+    </div> <!-- end hero -->
+
+    <div class="description">
+
+    <div class="column1">
+      <span *ngFor="let category of categories" class="tag">{{ category.categoryName }}</span>
+
+    </div> <!-- end column1 -->
+
+    <div class="column2">
+
+      <p>{{ movie.description }} </p>
+
+    <div class="avatars">
+      <a *ngFor="let actor of actors" href="#" data-toggle="tooltip" title="{{ actor.actorName }}" data-placement="top">
+        <img src="" alt="actor avatar" />
+      </a>
+
+    </div> <!-- end avatars -->
+
+
+
+    </div> <!-- end column2 -->
+    </div> <!-- end description -->
+  </div>
+
+</div> <!-- end container -->
+
+</div> <!-- end movie-card -->
+
+
+<!-- عرض رسالة تحميل إذا كانت البيانات لم تُحمّل بعد -->
+<ng-template #loading>
+  <p>Loading movie details...</p>
+</ng-template>

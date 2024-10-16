@@ -1,0 +1,38 @@
+.movies-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.add-movie-btn-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+
+  button {
+    padding: 10px 15px;
+    font-size: 16px;
+  }
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
+
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-gap: 20px;
+
+
+}
+
+.no-movies-message {
+  text-align: center;
+  font-size: 18px;
+  color: gray;
+  margin-top: 20px;
+}

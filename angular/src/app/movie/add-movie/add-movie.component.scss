@@ -1,0 +1,69 @@
+.add-movie-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+  
+    h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+  
+    .form-group {
+      margin-bottom: 15px;
+    }
+  
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  
+    .form-group textarea {
+      height: 100px;
+    }
+  
+    .form-buttons {
+      text-align: center;
+  
+      .btn {
+        margin: 10px;
+      }
+    }
+  
+    .selected-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+  
+      span {
+        background-color: #d1e7dd;
+        padding: 5px;
+        border-radius: 5px;
+  
+        .remove-item {
+          cursor: pointer;
+          color: #dc3545;
+          margin-left: 5px;
+        }
+      }
+    }
+  
+    ul {
+      list-style: none;
+      padding: 0;
+  
+      li {
+        padding: 5px;
+        cursor: pointer;
+  
+        &:hover {
+          background-color: #f1f1f1;
+        }
+      }
+    }
+  }
+  
