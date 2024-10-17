@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Entities;
@@ -21,6 +22,7 @@ using Volo.Abp.Users;
 
 namespace MovieManagementApp.Movies
 {
+    [RemoteService]
     public class MovieAppService : CrudAppService<
         Movie, // The Movie entity
         MovieDto, // Used to show movies
@@ -470,6 +472,8 @@ namespace MovieManagementApp.Movies
                 ObjectMapper.Map<List<Category>, List<CategoryLookupDto>>(categories)
             );
         }
+
+        
 
     }
 }
