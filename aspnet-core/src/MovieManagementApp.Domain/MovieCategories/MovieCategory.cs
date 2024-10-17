@@ -14,5 +14,9 @@ namespace MovieManagementApp.MovieCategories
         // Navigation properties
         public virtual Movie Movie { get; set; }
         public virtual Category Category { get; set; }
+        public void SetId()
+        {
+            Id = Guid.NewGuid();
+        }
     }
 }

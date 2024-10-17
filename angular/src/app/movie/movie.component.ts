@@ -28,6 +28,8 @@ export class MovieComponent implements OnInit {
 
     // Hooking the stream to ListService for fetching and updating movie data
     this.list.hookToQuery(movieStreamCreator).subscribe((response) => {
+      console.log(response);
+      
       this.movie = response; // Updating the movie list
       this.isLoading = false; // Stopping the loading state
     });

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieManagementApp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,10 @@ using Volo.Abp.EntityFrameworkCore;
 namespace MovieManagementApp.Migrations
 {
     [DbContext(typeof(MovieManagementAppDbContext))]
-    partial class MovieManagementAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241017102039_test")]
+    partial class test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,14 +142,24 @@ namespace MovieManagementApp.Migrations
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("CategoryId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("MovieId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("MovieId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("CategoryId1");
+
                     b.HasIndex("MovieId");
+
+                    b.HasIndex("MovieId1");
 
                     b.ToTable("AppMovieCategories", (string)null);
                 });
@@ -1879,16 +1891,24 @@ namespace MovieManagementApp.Migrations
             modelBuilder.Entity("MovieManagementApp.MovieCategories.MovieCategory", b =>
                 {
                     b.HasOne("MovieManagementApp.Categories.Category", "Category")
-                        .WithMany("MovieCategories")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MovieManagementApp.Movies.Movie", "Movie")
+                    b.HasOne("MovieManagementApp.Categories.Category", null)
                         .WithMany("MovieCategories")
+                        .HasForeignKey("CategoryId1");
+
+                    b.HasOne("MovieManagementApp.Movies.Movie", "Movie")
+                        .WithMany()
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("MovieManagementApp.Movies.Movie", null)
+                        .WithMany("MovieCategories")
+                        .HasForeignKey("MovieId1");
 
                     b.Navigation("Category");
 

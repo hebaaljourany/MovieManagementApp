@@ -1,23 +1,23 @@
-﻿using MovieManagementApp.Actors;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using MovieManagementApp.Actors;
+using MovieManagementApp.Application.Contracts.Movies;
 using MovieManagementApp.Categories;
+using MovieManagementApp.MovieActors;
+using MovieManagementApp.MovieCategories;
+using MovieManagementApp.MyAccounts;
+using MovieManagementApp.MyLists;
 using MovieManagementApp.Ratings;
 using MovieManagementApp.UserMovieInteractions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Users;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using MovieManagementApp.Application.Contracts.Movies;
-using MovieManagementApp.MyAccounts;
-using Microsoft.EntityFrameworkCore;
-using MovieManagementApp.MyLists;
-using MovieManagementApp.MovieActors;
-using MovieManagementApp.MovieCategories;
-using Microsoft.Extensions.Logging;
 
 namespace MovieManagementApp.Movies
 {
@@ -156,39 +156,39 @@ namespace MovieManagementApp.Movies
              movie.TotalDownloads = 0;
 
    
-             await Repository.InsertAsync(movie);
+             
 
              try
              {
                 
-                 if (input.ActorIds != null)
+                 if (input.ActorIds is not null && input.ActorIds.Any())
                  {
-                     movie.MovieActors = new List<MovieActor>();
+                     var acts = new List<MovieActor>();
                      foreach (var actorId in input.ActorIds)
                      {
-                         movie.MovieActors.Add(new MovieActor
+                         acts.Add(new MovieActor
                          {
-                             MovieId = movie.Id,
                              ActorId = actorId   
                          });
                      }
+                    movie.MovieActors = acts;
                  }
 
             
-                 if (input.CategoryIds != null)
+                 if (input.CategoryIds is not null && input.CategoryIds.Any())
                  {
-                     movie.MovieCategories = new List<MovieCategory>();
+                     var cats = new List<MovieCategory>();
                      foreach (var categoryId in input.CategoryIds)
                      {
-                         movie.MovieCategories.Add(new MovieCategory
+                         cats.Add(new MovieCategory
                          {
-                             MovieId = movie.Id,   
                              CategoryId = categoryId 
                          });
                      }
+                    movie.MovieCategories = cats;
                  }
 
-                 await Repository.InsertAsync(movie);
+                 movie = await Repository.InsertAsync(movie, true);
 
              
                  return ObjectMapper.Map<Movie, MovieDto>(movie);

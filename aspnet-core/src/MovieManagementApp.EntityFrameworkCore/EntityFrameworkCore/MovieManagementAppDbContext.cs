@@ -169,14 +169,14 @@ public class MovieManagementAppDbContext :
                 MovieManagementAppConsts.DbSchema);
             b.ConfigureByConvention(); //auto configure for the base class props
             b.HasKey(x => x.Id);
-            b.HasOne(x => x.Movie)
-                .WithMany() // Assuming Movie can have multiple actors
-                .HasForeignKey(x => x.MovieId)
-                .IsRequired();
-            b.HasOne(x => x.Actor)
-                .WithMany() // Assuming Actor can act in multiple movies
-                .HasForeignKey(x => x.ActorId)
-                .IsRequired();
+            //b.HasOne(x => x.Movie)
+            //    .WithMany() // Assuming Movie can have multiple actors
+            //    .HasForeignKey(x => x.MovieId)
+            //    .IsRequired();
+            //b.HasOne(x => x.Actor)
+            //    .WithMany() // Assuming Actor can act in multiple movies
+            //    .HasForeignKey(x => x.ActorId)
+            //    .IsRequired();
         });
         builder.Entity<Actor>(b =>
         {
@@ -192,14 +192,14 @@ public class MovieManagementAppDbContext :
                 MovieManagementAppConsts.DbSchema);
             b.ConfigureByConvention(); //auto configure for the base class props
             b.HasKey(x => x.Id);
-            b.HasOne(x => x.Movie)
-                .WithMany() // Assuming Movie can belong to multiple categories
-                .HasForeignKey(x => x.MovieId)
-                .IsRequired();
-            b.HasOne(x => x.Category)
-                .WithMany() // Assuming Category can have multiple movies
-                .HasForeignKey(x => x.CategoryId)
-                .IsRequired();
+            //b.HasOne(x => x.Movie)
+            //    .WithMany() // Assuming Movie can belong to multiple categories
+            //    .HasForeignKey(x => x.MovieId)
+            //    .IsRequired();
+            //b.HasOne(x => x.Category)
+            //    .WithMany() // Assuming Category can have multiple movies
+            //    .HasForeignKey(x => x.CategoryId)
+            //    .IsRequired();
         });
         builder.Entity<Category>(b =>
         {
