@@ -3,6 +3,7 @@ import { MovieService } from '@proxy/movies'; // Movie Service to fetch movies
 import { MovieDto } from '@proxy/movies'; // Movie Data Transfer Object (DTO)
 import { Router } from '@angular/router';
 import { ListService, PagedResultDto } from '@abp/ng.core'; // ABP services for pagination and list handling
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-movie',
@@ -15,12 +16,15 @@ import { ListService, PagedResultDto } from '@abp/ng.core'; // ABP services for 
 export class MovieComponent implements OnInit {
   movie = { items: [], totalCount: 0 } as PagedResultDto<MovieDto>; // Holds the list of movies and total count
   isLoading = true; // Loading state
-
+  videoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl('https://localhost:44350/stream-video');
   constructor(
     private movieService: MovieService, // Injecting Movie Service
     private router: Router, // Injecting Router to navigate
-    public readonly list: ListService // ListService for managing queries
-  ) {}
+    public readonly list: ListService, // ListService for managing queries
+    private domSanitizer: DomSanitizer
+  ) {
+     //this.videoUrl = 'https://localhost:44350/stream-video';
+  }
 
   ngOnInit(): void {
     // Stream to fetch the list of movies using a query
@@ -39,4 +43,6 @@ export class MovieComponent implements OnInit {
   navigateToAddMovie(): void {
     this.router.navigate(['/movies/add-movie']);
   }
+
+
 }

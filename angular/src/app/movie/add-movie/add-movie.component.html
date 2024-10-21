@@ -8,6 +8,11 @@
       <label for="title">Title</label>
       <input id="title" type="text" formControlName="title" class="form-control" placeholder="Movie Title" />
     </div>
+    <!-- Movie Title -->
+    <div class="form-group">
+      <label for="Upload File">Upload File</label>
+      <input type="file"  (change)="onFileSelected($event)" />
+    </div>
 
     <!-- Duration -->
     <div class="form-group">

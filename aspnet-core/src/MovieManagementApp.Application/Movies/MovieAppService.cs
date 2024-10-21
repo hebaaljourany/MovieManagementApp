@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MovieManagementApp.Actors;
 using MovieManagementApp.Application.Contracts.Movies;
+using MovieManagementApp.Blob;
 using MovieManagementApp.Categories;
 using MovieManagementApp.MovieActors;
 using MovieManagementApp.MovieCategories;
@@ -11,18 +14,22 @@ using MovieManagementApp.Ratings;
 using MovieManagementApp.UserMovieInteractions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.BlobStoring;
+using Volo.Abp.Content;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Users;
 
 namespace MovieManagementApp.Movies
 {
-    [RemoteService]
+    [RemoteService(IsEnabled = true)]
     public class MovieAppService : CrudAppService<
         Movie, // The Movie entity
         MovieDto, // Used to show movies
@@ -41,8 +48,9 @@ namespace MovieManagementApp.Movies
         private readonly IRepository<MovieActor, Guid> _movieActorRepository;
         private readonly IRepository<MovieCategory, Guid> _movieCategoryRepository;
         private readonly ILogger<MovieAppService> _logger;
-        string test = "mak a conflict";
-
+        protected HttpContext HttpContext => _httpContextAccessor.HttpContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IBlobContainer<MovieContainer> _blobContainer;
 
 
         public MovieAppService(
@@ -56,8 +64,10 @@ namespace MovieManagementApp.Movies
             IRepository<Category, Guid> categoryRepository,
             IRepository<MovieActor, Guid> movieActorRepository,
             IRepository<MovieCategory, Guid> movieCategoryRepository,
-            ILogger<MovieAppService> logger
-
+            ILogger<MovieAppService> logger,
+            IHttpContextAccessor httpContextAccessor
+,
+            IBlobContainer<MovieContainer> blobContainer
 
 
 
@@ -73,9 +83,56 @@ namespace MovieManagementApp.Movies
             _movieActorRepository = movieActorRepository;
             _movieCategoryRepository = movieCategoryRepository;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
+            _blobContainer = blobContainer;
+        }
+        public async Task<IRemoteStreamContent> StreamVideo()
+        {
+            var relativePath = "gg.mp4";
+            var webRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            var fullPath = Path.Combine(webRootPath, relativePath);
+
+            // Check if the file exists
+            if (!File.Exists(fullPath))
+            {
+                throw new FileNotFoundException("Video file does not exist at the specified path.", fullPath);
+            }
+            var videoPath = fullPath;
+            //var stream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
 
+            if (!System.IO.File.Exists(videoPath))
+            {
+                return null; // Return null or handle not found appropriately
+            }
 
+            var fileInfo = new FileInfo(videoPath);
+
+            // Check for range header
+            if (HttpContext.Request.Headers.ContainsKey("Range"))
+            {
+                var range = HttpContext.Request.Headers["Range"].ToString();
+                var rangeHeader = RangeHeaderValue.Parse(range);
+                var start = rangeHeader.Ranges.First().From ?? 0;
+                var end = rangeHeader.Ranges.First().To ?? (fileInfo.Length - 1);
+
+                HttpContext.Response.StatusCode = StatusCodes.Status206PartialContent; // Partial content status
+                HttpContext.Response.Headers.Add("Content-Range", $"bytes {start}-{end}/{fileInfo.Length}");
+                HttpContext.Response.Headers.Add("Accept-Ranges", "bytes");
+                HttpContext.Response.ContentType = "video/mp4";
+
+                var stream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                stream.Seek(start, SeekOrigin.Begin);
+
+                // Return RemoteStreamContent with the specified byte range
+                return new RemoteStreamContent(stream, videoPath, "video/mp4");
+            }
+            else
+            {
+                // If no range is specified, return the entire video
+                var stream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                return new RemoteStreamContent(stream, videoPath, "video/mp4");
+            }
         }
         private async Task<Guid> GetMyAccountIdAsync()
         {
@@ -158,8 +215,8 @@ namespace MovieManagementApp.Movies
              movie.TotalViews = 0;
              movie.TotalDownloads = 0;
 
-   
-             
+
+            
 
              try
              {
@@ -473,8 +530,16 @@ namespace MovieManagementApp.Movies
                 ObjectMapper.Map<List<Category>, List<CategoryLookupDto>>(categories)
             );
         }
+        public async Task SaveBytesAsync(IRemoteStreamContent blob)
+        {
+            var name = blob.FileName + " - " +Guid.NewGuid().ToString();
+            await _blobContainer.SaveAsync(name, await blob.GetStream().GetAllBytesAsync());
+        }
 
-        
+        public async Task<byte[]> GetBytesAsync()
+        {
+            return await _blobContainer.GetAllBytesOrNullAsync("my-blob-1");
+        }
 
     }
 }

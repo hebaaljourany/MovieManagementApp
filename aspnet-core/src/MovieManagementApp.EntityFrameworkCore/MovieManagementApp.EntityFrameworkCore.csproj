@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Volo.Abp.BlobStoring.Database.EntityFrameworkCore" Version="6.0.0" />
     <ProjectReference Include="..\MovieManagementApp.Domain\MovieManagementApp.Domain.csproj" />
     <ProjectReference Include="..\MovieManagementApp.HttpApi\MovieManagementApp.HttpApi.csproj" />
     <PackageReference Include="Volo.Abp.EntityFrameworkCore.SqlServer" Version="6.0.0" />

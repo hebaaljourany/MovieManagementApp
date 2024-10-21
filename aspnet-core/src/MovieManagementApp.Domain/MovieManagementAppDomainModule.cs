@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MovieManagementApp.MultiTenancy;
 using Volo.Abp.AuditLogging;
@@ -13,6 +13,7 @@ using Volo.Abp.PermissionManagement.Identity;
 using Volo.Abp.PermissionManagement.OpenIddict;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
+using Volo.Abp.BlobStoring.Database;
 
 namespace MovieManagementApp;
 
@@ -29,7 +30,8 @@ namespace MovieManagementApp;
     typeof(AbpTenantManagementDomainModule),
     typeof(AbpEmailingModule)
 )]
-public class MovieManagementAppDomainModule : AbpModule
+[DependsOn(typeof(BlobStoringDatabaseDomainModule))]
+    public class MovieManagementAppDomainModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {

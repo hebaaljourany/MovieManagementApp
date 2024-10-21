@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MovieManagementApp.MyAccounts;
 using MovieManagementApp.Actors;
 using MovieManagementApp.Categories;
@@ -22,6 +22,7 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Volo.Abp.BlobStoring.Database.EntityFrameworkCore;
 
 namespace MovieManagementApp.EntityFrameworkCore;
 
@@ -210,5 +211,6 @@ public class MovieManagementAppDbContext :
             b.Property(x => x.CategoryName).IsRequired();
         });
 
-    }
+        builder.ConfigureBlobStoring();
+        }
 }

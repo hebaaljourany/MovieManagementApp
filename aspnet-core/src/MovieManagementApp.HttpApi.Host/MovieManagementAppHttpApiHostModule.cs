@@ -28,6 +28,7 @@ using Volo.Abp.Modularity;
 using Volo.Abp.Swashbuckle;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
+using Volo.Abp.BlobStoring;
 
 namespace MovieManagementApp;
 
@@ -42,7 +43,8 @@ namespace MovieManagementApp;
     typeof(AbpAspNetCoreSerilogModule),
     typeof(AbpSwashbuckleModule)
 )]
-public class MovieManagementAppHttpApiHostModule : AbpModule
+[DependsOn(typeof(AbpBlobStoringModule))]
+    public class MovieManagementAppHttpApiHostModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {

@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Content;
 
 namespace MovieManagementApp.Application.Contracts.Movies
 {
@@ -18,5 +19,7 @@ namespace MovieManagementApp.Application.Contracts.Movies
 
         // تعديل دالة GetCategoryLookupAsync لتقبل معامل searchTerm
         Task<ListResultDto<CategoryLookupDto>> GetCategoryLookupAsync(string searchTerm );
+        Task SaveBytesAsync(IRemoteStreamContent blob);
+
     }
 }
