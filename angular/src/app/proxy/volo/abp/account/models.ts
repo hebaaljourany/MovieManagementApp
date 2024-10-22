@@ -19,3 +19,8 @@ export interface SendPasswordResetCodeDto {
   returnUrl?: string;
   returnUrlHash?: string;
 }
+
+export interface VerifyPasswordResetTokenInput {
+  userId?: string;
+  resetToken: string;
+}

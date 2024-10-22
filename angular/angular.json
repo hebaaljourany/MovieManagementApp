@@ -51,6 +51,11 @@
                 "bundleName": "ngx-datatable-icons"
               },
               {
+                "input": "node_modules/@volo/ngx-lepton-x.lite/assets/css/font-bundle.css",
+                "inject": false,
+                "bundleName": "font-bundle"
+              },
+              {
                 "input": "node_modules/@swimlane/ngx-datatable/themes/material.css",
                 "inject": true,
                 "bundleName": "ngx-datatable-material"
@@ -137,10 +142,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "MovieManagementApp:build:production"
+              "buildTarget": "MovieManagementApp:build:production"
             },
             "development": {
-              "browserTarget": "MovieManagementApp:build:development"
+              "buildTarget": "MovieManagementApp:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -148,7 +153,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "MovieManagementApp:build"
+            "buildTarget": "MovieManagementApp:build"
           }
         },
         "test": {
@@ -172,6 +177,6 @@
         }
       }
     }
-  },
-  "defaultProject": "MovieManagementApp"
+  }
+  
 }

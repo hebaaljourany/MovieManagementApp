@@ -11,6 +11,9 @@ export interface IdentityUserDto extends ExtensibleFullAuditedEntityDto<string> 
   phoneNumberConfirmed: boolean;
   isActive: boolean;
   lockoutEnabled: boolean;
+  accessFailedCount: number;
   lockoutEnd?: string;
   concurrencyStamp?: string;
+  entityVersion: number;
+  lastPasswordChangeTime?: string;
 }

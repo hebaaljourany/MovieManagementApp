@@ -1,5 +1,5 @@
 import type { CategoryDto } from './models';
-import { RestService } from '@abp/ng.core';
+import { RestService, Rest } from '@abp/ng.core';
 import type { PagedAndSortedResultRequestDto, PagedResultDto } from '@abp/ng.core';
 import { Injectable } from '@angular/core';
 import type { CreateUpdateCategoryDto } from '../application/contracts/categories/models';
@@ -11,47 +11,47 @@ export class CategoryService {
   apiName = 'Default';
   
 
-  create = (input: CreateUpdateCategoryDto) =>
+  create = (input: CreateUpdateCategoryDto, config?: Partial<Rest.Config>) =>
     this.restService.request<any, CategoryDto>({
       method: 'POST',
       url: '/api/app/category',
       body: input,
     },
-    { apiName: this.apiName });
+    { apiName: this.apiName,...config });
   
 
-  delete = (id: string) =>
+  delete = (id: string, config?: Partial<Rest.Config>) =>
     this.restService.request<any, void>({
       method: 'DELETE',
       url: `/api/app/category/${id}`,
     },
-    { apiName: this.apiName });
+    { apiName: this.apiName,...config });
   
 
-  get = (id: string) =>
+  get = (id: string, config?: Partial<Rest.Config>) =>
     this.restService.request<any, CategoryDto>({
       method: 'GET',
       url: `/api/app/category/${id}`,
     },
-    { apiName: this.apiName });
+    { apiName: this.apiName,...config });
   
 
-  getList = (input: PagedAndSortedResultRequestDto) =>
+  getList = (input: PagedAndSortedResultRequestDto, config?: Partial<Rest.Config>) =>
     this.restService.request<any, PagedResultDto<CategoryDto>>({
       method: 'GET',
       url: '/api/app/category',
-      params: { skipCount: input.skipCount, maxResultCount: input.maxResultCount, sorting: input.sorting },
+      params: { sorting: input.sorting, skipCount: input.skipCount, maxResultCount: input.maxResultCount },
     },
-    { apiName: this.apiName });
+    { apiName: this.apiName,...config });
   
 
-  update = (id: string, input: CreateUpdateCategoryDto) =>
+  update = (id: string, input: CreateUpdateCategoryDto, config?: Partial<Rest.Config>) =>
     this.restService.request<any, CategoryDto>({
       method: 'PUT',
       url: `/api/app/category/${id}`,
       body: input,
     },
-    { apiName: this.apiName });
+    { apiName: this.apiName,...config });
 
   constructor(private restService: RestService) {}
 }
