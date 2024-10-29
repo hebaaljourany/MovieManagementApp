@@ -6,6 +6,7 @@ export interface CreateUpdateMovieDto {
   ageRating: string;
   releaseDate: string;
   posterUrl: string;
+  coverUrl?: string;
   videoUrl: string;
   actorIds: string[];
   categoryIds: string[];

@@ -9,12 +9,10 @@ namespace MovieManagementApp.Application.Contracts.Actors
         [Required]
         [StringLength(128)]
         public string ActorName { get; set; }
+        [Url]
+        public string ActorImage { get; set; }
         public List<Guid> MovieIds { get; set; }
 
-        // [DataType(DataType.Date)]
-        // public DateTime? BirthDate { get; set; }
 
-        //[StringLength(512)]
-        //public string Biography { get; set; }
     }
 }

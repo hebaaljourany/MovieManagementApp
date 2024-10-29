@@ -1,4 +1,5 @@
 ﻿using MovieManagementApp.Application.Contracts.Categories;
+using MovieManagementApp.Permissions;
 using System;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -18,6 +19,11 @@ namespace MovieManagementApp.Categories
         public CategoryAppService(IRepository<Category, Guid> repository)
             : base(repository)
         {
+            GetPolicyName = MovieManagementAppPermissions.Categories.Default;
+            GetListPolicyName = MovieManagementAppPermissions.Categories.Default;
+            CreatePolicyName = MovieManagementAppPermissions.Categories.Create;
+            UpdatePolicyName = MovieManagementAppPermissions.Categories.Edit;
+            DeletePolicyName = MovieManagementAppPermissions.Categories.Delete;
         }
     }
 }

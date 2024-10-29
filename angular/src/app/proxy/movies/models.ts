@@ -18,6 +18,7 @@ export interface MovieDto extends AuditedEntityDto<string> {
   description?: string;
   ageRating?: string;
   posterUrl?: string;
+  coverUrl?: string;
   videoUrl?: string;
   actors: ActorDto[];
   categories: CategoryDto[];

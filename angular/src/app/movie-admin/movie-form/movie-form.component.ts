@@ -7,11 +7,11 @@ import { Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-add-movie',
-  templateUrl: './add-movie.component.html',
-  styleUrls: ['./add-movie.component.scss']
+  selector: 'app-movie-form',
+  templateUrl: './movie-form.component.html',
+  styleUrls: ['./movie-form.component.scss']
 })
-export class AddMovieComponent implements OnInit {
+export class MovieFormComponent implements OnInit {
   movieForm: FormGroup;
   actorSearchTerm: string = '';
   categorySearchTerm: string = '';
@@ -46,6 +46,7 @@ export class AddMovieComponent implements OnInit {
       ageRating: ['', Validators.required],
       releaseDate: ['', Validators.required],
       posterUrl: ['', Validators.required],
+      coverUrl: ['', Validators.required],
       videoUrl: ['', Validators.required],
       actorSearchTerm: [''],  
       categorySearchTerm: ['']
@@ -54,9 +55,8 @@ export class AddMovieComponent implements OnInit {
   loadMovieData(movieId: string) {
     this.movieService.get(movieId).subscribe(movie => {
       console.log('Loaded movie:', movie);
-      console.log('Actors:', movie.actors);
-      console.log('Categories:', movie.categories);
-      
+      console.log('Actors loading:', movie.actors);
+      console.log('Categories loading:', movie.categories);
       this.movieForm.patchValue(movie);
       this.selectedActors = movie.actors; // تعيين الممثلين الحاليين
       this.selectedCategories = movie.categories; // تعيين التصنيفات الحالية
@@ -126,13 +126,16 @@ export class AddMovieComponent implements OnInit {
       ...this.movieForm.value,
       actorIds: this.selectedActors.map(actor => actor.id),
       categoryIds: this.selectedCategories.map(category => category.id)
+      
     };
+    console.log('submit movie:', this.movieForm.value);
+
 
     if (this.movieId) {
       // إذا كان تعديل فيلم
       this.movieService.update(this.movieId, movieData).subscribe(
         (response) => {
-          this.router.navigate(['/movies/details', response.id]);
+          this.router.navigate(['/movie-admin']);
         },
         (error) => {
           console.error('An error occurred while updating the movie:', error);

@@ -32,10 +32,9 @@ import { APP_ROUTE_PROVIDER } from './route.provider';
             uniqueUsername: "::AlreadyExists[{{ username }}]",
             validatePassword: "::invalid password[{{ password }}]"
           },
-          
+
         },
-        
-        
+
 
 }
     ),

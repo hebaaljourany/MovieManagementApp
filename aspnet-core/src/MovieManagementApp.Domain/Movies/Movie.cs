@@ -36,6 +36,9 @@ namespace MovieManagementApp.Movies
         [Url]
         public string PosterUrl { get; set; }
 
+        [Url]
+        public string CoverUrl { get; set; }
+
         // URL for the movie video, must be a valid URL
         [Required]
         [Url]

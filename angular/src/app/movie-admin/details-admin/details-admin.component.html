@@ -1,0 +1,18 @@
+<div class="movie-details" *ngIf="movie">
+    <h2>{{ movie.title }}</h2>
+    <p><strong>Release Date:</strong> {{ formatDate(movie.releaseDate) }}</p>
+    <p><strong>Description:</strong> {{ movie.description }}</p>
+    <p><strong>Duration:</strong> {{ movie.duration }} minutes</p>
+    <p><strong>Age Rating:</strong> {{ movie.ageRating }}</p>
+  
+    <!-- Poster Image -->
+    <div class="poster-container">
+      <img [src]="movie.posterUrl" alt="Movie Poster" class="poster-image" />
+    </div>
+  
+    <!-- Cover Image -->
+    <div class="cover-container">
+      <img [src]="movie.coverUrl" alt="Movie Cover" class="cover-image" />
+    </div>
+  </div>
+  

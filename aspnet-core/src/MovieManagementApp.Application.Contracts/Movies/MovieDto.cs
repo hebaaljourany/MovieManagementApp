@@ -16,6 +16,8 @@ namespace MovieManagementApp.Movies
         public string Description { get; set; }
         public string AgeRating { get; set; }
         public string PosterUrl { get; set; }
+        public string CoverUrl { get; set; }
+
         public string VideoUrl { get; set; }
 
         public List<ActorDto> Actors { get; set; }

@@ -5,6 +5,7 @@ import { MovieService } from '@proxy/movies'; // Importing necessary services
 import { MovieDto } from '@proxy/movies'; // Importing the Movie DTO
 import { ActorDto } from '@proxy/actors'; // Importing the Actor DTO
 import { CategoryDto } from '@proxy/categories'; // Importing the Category DTO
+import { PermissionService } from '@abp/ng.core';
 
 @Component({
   selector: 'app-movie-details',
@@ -25,7 +26,9 @@ export class DetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute, // Activated route to get route parameters
     private movieService: MovieService, // Movie service to fetch movie data
-    private router: Router // Router for navigation
+    private router: Router, // Router for navigation
+    private permissionService: PermissionService // إضافة PermissionService
+
   ) {}
 
   ngOnInit(): void {
@@ -46,8 +49,6 @@ export class DetailsComponent implements OnInit {
 
         // Fetching stats for the movie
         this.getMovieStats();
-
-        // جلب التقييم الخاص بالمستخدم الحالي
         this.getUserRating();
       },
       error: (err) => {
@@ -116,7 +117,7 @@ export class DetailsComponent implements OnInit {
   // Method to navigate to the update movie component
   navigateToUpdate(): void {
     //this.router.navigate(['/movies/update', this.movie.id]); // Navigating to update movie page
-    this.router.navigate(['/movies/add-movie', this.movie.id]);
+    this.router.navigate(['/movies/movie-form', this.movie.id]);
 
   }
   deleteMovie() {

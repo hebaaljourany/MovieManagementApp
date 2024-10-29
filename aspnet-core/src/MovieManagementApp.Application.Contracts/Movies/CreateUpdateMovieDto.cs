@@ -28,6 +28,8 @@ namespace MovieManagementApp.Application.Contracts.Movies
         [Required]
         [Url]
         public string PosterUrl { get; set; }
+        [Url]
+        public string CoverUrl { get; set; }
         [Required]
         [Url]
         public string VideoUrl { get; set; }
