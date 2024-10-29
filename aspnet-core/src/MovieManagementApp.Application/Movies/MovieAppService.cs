@@ -41,6 +41,7 @@ namespace MovieManagementApp.Movies
         private readonly IRepository<MovieActor, Guid> _movieActorRepository;
         private readonly IRepository<MovieCategory, Guid> _movieCategoryRepository;
         private readonly ILogger<MovieAppService> _logger;
+        string test = "mak a conflict";
 
 
 
