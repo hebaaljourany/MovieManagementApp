@@ -1,6 +1,6 @@
 <div class="movie-card" (click)="goToMovieDetails()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
   <div class="poster">
-    <img [src]="movie.posterUrl" alt="{{ movie.title }}">
+    <img [src]="poster" alt="{{ movie.title }}">
   </div>
 
   <div class="movie-info" *ngIf="isHovered">

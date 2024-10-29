@@ -123,8 +123,6 @@ namespace MovieManagementApp
                     Duration = 148,
                     Description = "A mind-bending thriller",
                     AgeRating = "PG-13",
-                    PosterUrl = "https://example.com/inception.jpg",
-                    VideoUrl = "https://example.com/inception.mp4"
                 },
                 autoSave: true
             );
@@ -137,8 +135,6 @@ namespace MovieManagementApp
                     Duration = 134,
                     Description = "A superhero action film",
                     AgeRating = "PG-13",
-                    PosterUrl = "https://example.com/blackwidow.jpg",
-                    VideoUrl = "https://example.com/blackwidow.mp4"
                 },
                 autoSave: true
             );

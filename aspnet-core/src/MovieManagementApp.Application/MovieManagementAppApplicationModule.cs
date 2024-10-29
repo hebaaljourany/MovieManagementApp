@@ -41,8 +41,8 @@ namespace MovieManagementApp;
                 container.UseMinio(minio =>
                 {
                     minio.EndPoint = "192.168.43.139:9000";
-                    minio.AccessKey = "7Fs4J0m9IZ48Ij8Gjb6p";
-                    minio.SecretKey = "DocreeEcvLUdigVgpQ27hS68LWgqkh7ERWCwIlOl";
+                    minio.AccessKey = "JlJoOgQlyH6LcvalYVAL";
+                    minio.SecretKey = "GMqJ3qO4foNgWXE6v5W4rVPYUlTK71ntKwlpFx2i";
                     minio.BucketName = "movies";
                 });
             });
@@ -54,7 +54,7 @@ namespace MovieManagementApp;
         Configure<AbpAspNetCoreMvcOptions>(options =>
         {
             options.ConventionalControllers.Create(typeof(MyAccountController).Assembly);
-            //options.ConventionalControllers.FormBodyBindingIgnoredTypes.Add(typeof(IRemoteStreamContent));
+            options.ConventionalControllers.FormBodyBindingIgnoredTypes.Add(typeof(CreateUpdateMovieDto));
         });
         context.Services.AddTransient<AccountAppService, MyAccountAppService>();
         context.Services.Replace(

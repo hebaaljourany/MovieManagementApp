@@ -16,7 +16,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class MovieComponent implements OnInit {
   movie = { items: [], totalCount: 0 } as PagedResultDto<MovieDto>; // Holds the list of movies and total count
   isLoading = true; // Loading state
-  videoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl('https://localhost:44350/stream-video');
   constructor(
     private movieService: MovieService, // Injecting Movie Service
     private router: Router, // Injecting Router to navigate

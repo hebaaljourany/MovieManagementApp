@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Minio;
 using MovieManagementApp.Actors;
 using MovieManagementApp.Application.Contracts.Movies;
 using MovieManagementApp.Blob;
@@ -86,27 +87,14 @@ namespace MovieManagementApp.Movies
             _httpContextAccessor = httpContextAccessor;
             _blobContainer = blobContainer;
         }
-        public async Task<IRemoteStreamContent> StreamVideo()
+        [HttpGet("stream-video")]
+        public async Task<IRemoteStreamContent> StreamVideo(string blobName)
         {
-            var relativePath = "gg.mp4";
-            var webRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-            var fullPath = Path.Combine(webRootPath, relativePath);
-
-            // Check if the file exists
-            if (!File.Exists(fullPath))
-            {
-                throw new FileNotFoundException("Video file does not exist at the specified path.", fullPath);
-            }
-            var videoPath = fullPath;
-            //var stream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            //var objectName = "[EgyBest].House.S06E21.BluRay.720p.x264.mp4 - cfd6664b-028f-4f25-a562-4dc3e0157616"; // The name of the video file in MinIO
 
 
-            if (!System.IO.File.Exists(videoPath))
-            {
-                return null; // Return null or handle not found appropriately
-            }
-
-            var fileInfo = new FileInfo(videoPath);
+            var stream = await _blobContainer.GetAllBytesAsync(blobName);
+            var movieStream = new MemoryStream(stream);
 
             // Check for range header
             if (HttpContext.Request.Headers.ContainsKey("Range"))
@@ -114,26 +102,33 @@ namespace MovieManagementApp.Movies
                 var range = HttpContext.Request.Headers["Range"].ToString();
                 var rangeHeader = RangeHeaderValue.Parse(range);
                 var start = rangeHeader.Ranges.First().From ?? 0;
-                var end = rangeHeader.Ranges.First().To ?? (fileInfo.Length - 1);
+                var end = rangeHeader.Ranges.First().To ?? (stream.Length - 1);
 
                 HttpContext.Response.StatusCode = StatusCodes.Status206PartialContent; // Partial content status
-                HttpContext.Response.Headers.Add("Content-Range", $"bytes {start}-{end}/{fileInfo.Length}");
+                HttpContext.Response.Headers.Add("Content-Range", $"bytes {start}-{end}/{stream.Length}");
                 HttpContext.Response.Headers.Add("Accept-Ranges", "bytes");
                 HttpContext.Response.ContentType = "video/mp4";
 
-                var stream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                stream.Seek(start, SeekOrigin.Begin);
+                // Create a stream for the specified byte range
+                
+                movieStream.Seek(start, SeekOrigin.Begin);
 
-                // Return RemoteStreamContent with the specified byte range
-                return new RemoteStreamContent(stream, videoPath, "video/mp4");
+                return new RemoteStreamContent(movieStream, blobName, "video/mp4");
             }
             else
             {
                 // If no range is specified, return the entire video
-                var stream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                return new RemoteStreamContent(stream, videoPath, "video/mp4");
+                return new RemoteStreamContent(movieStream, blobName, "video/mp4");
             }
         }
+        //[HttpGet("stream-video")]
+
+        //public async Task<IRemoteStreamContent> StreamVideo()
+        //{
+        //    var relativePath = "gg.mp4";
+        //    var webRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+        //    var fullPath = Path.Combine(webRootPath, relativePath);
+
         private async Task<Guid> GetMyAccountIdAsync()
         {
             if (!_currentUser.IsAuthenticated)
@@ -195,6 +190,8 @@ namespace MovieManagementApp.Movies
                 var movieDto = ObjectMapper.Map<Movie, MovieDto>(movie);
                 movieDto.Actors = actors;
                 movieDto.Categories = categories;
+                var posterBlob = await _blobContainer.GetAllBytesAsync(movie.PosterBlob);
+                movieDto.PosterBlob = Convert.ToBase64String(posterBlob);
 
                 // Include average rating if needed
                 movieDto.AverageRating = await CalculateAverageRatingAsync(id);
@@ -205,7 +202,7 @@ namespace MovieManagementApp.Movies
         
 
         // Create Movie - with default values for certain properties
-        public override async Task<MovieDto> CreateAsync(CreateUpdateMovieDto input)
+        public override async Task<MovieDto> CreateAsync([FromForm] CreateUpdateMovieDto input)
          {
            
              var movie = ObjectMapper.Map<CreateUpdateMovieDto, Movie>(input);
@@ -215,7 +212,10 @@ namespace MovieManagementApp.Movies
              movie.TotalViews = 0;
              movie.TotalDownloads = 0;
 
-
+            var movieBlobName = await UploadFileAsync(input.Blob);
+            var posterBlobName = await UploadFileAsync(input.PosterBlob);
+            movie.MovieBlob = movieBlobName;
+            movie.PosterBlob = posterBlobName;
             
 
              try
@@ -276,8 +276,6 @@ namespace MovieManagementApp.Movies
             movie.Description = input.Description;
             movie.AgeRating = input.AgeRating;
             movie.ReleaseDate = input.ReleaseDate;
-            movie.PosterUrl = input.PosterUrl;
-            movie.VideoUrl = input.VideoUrl;
 
             // 3. تحديث العلاقات الخاصة بالممثلين
             if (input.ActorIds != null)
@@ -530,10 +528,11 @@ namespace MovieManagementApp.Movies
                 ObjectMapper.Map<List<Category>, List<CategoryLookupDto>>(categories)
             );
         }
-        public async Task SaveBytesAsync(IRemoteStreamContent blob)
+        private async Task<string> UploadFileAsync(IRemoteStreamContent blob)
         {
             var name = blob.FileName + " - " +Guid.NewGuid().ToString();
             await _blobContainer.SaveAsync(name, await blob.GetStream().GetAllBytesAsync());
+            return name;
         }
 
         public async Task<byte[]> GetBytesAsync()

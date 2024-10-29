@@ -142,8 +142,6 @@ public class MovieManagementAppDbContext :
             b.Property(x => x.Title).IsRequired().HasMaxLength(255);
             b.Property(x => x.Duration).IsRequired();
             b.Property(x => x.AgeRating).IsRequired().HasMaxLength(10);
-            b.Property(x => x.PosterUrl).IsRequired();
-            b.Property(x => x.VideoUrl).IsRequired();
 
         });
         builder.Entity<Rating>(b =>

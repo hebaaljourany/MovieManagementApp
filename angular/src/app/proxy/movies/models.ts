@@ -13,12 +13,12 @@ export interface CategoryLookupDto extends EntityDto<string> {
 
 export interface MovieDto extends AuditedEntityDto<string> {
   title?: string;
+  movieBlob?: string;
+  posterBlob?: string;
   releaseDate?: string;
   duration: number;
   description?: string;
   ageRating?: string;
-  posterUrl?: string;
-  videoUrl?: string;
   actors: ActorDto[];
   categories: CategoryDto[];
   ratings: RatingDto[];

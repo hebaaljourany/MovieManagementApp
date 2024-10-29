@@ -14,6 +14,10 @@ namespace MovieManagementApp.Movies
         [Required]
         [StringLength(255)]
         public string Title { get; set; }
+        [Required]
+        public string MovieBlob {  get; set; }
+        [Required]
+        public string PosterBlob { get; set; }
 
         // Release date of the movie, required
         public DateTime ReleaseDate { get; set; }
@@ -31,15 +35,6 @@ namespace MovieManagementApp.Movies
         [StringLength(10)]
         public string AgeRating { get; set; }
 
-        // URL for the movie poster, must be a valid URL
-        [Required]
-        [Url]
-        public string PosterUrl { get; set; }
-
-        // URL for the movie video, must be a valid URL
-        [Required]
-        [Url]
-        public string VideoUrl { get; set; }
 
         // Many-to-Many with Actor Entity
         public List<MovieActor> MovieActors { get; set; }

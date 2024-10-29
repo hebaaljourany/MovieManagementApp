@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Volo.Abp.Content;
 
 namespace MovieManagementApp.Application.Contracts.Movies
 {
@@ -9,9 +10,12 @@ namespace MovieManagementApp.Application.Contracts.Movies
         [Required]
         [StringLength(256)]
         public string Title { get; set; }
+        
+        public IRemoteStreamContent Blob { get; set; }
+        public IRemoteStreamContent PosterBlob { get; set; }
+        
         [Required]
         [Range(1, 300)]
-
         public int Duration { get; set; }
 
         [StringLength(1000)]
@@ -25,12 +29,6 @@ namespace MovieManagementApp.Application.Contracts.Movies
         [DataType(DataType.Date)]
         public DateTime ReleaseDate { get; set; }
 
-        [Required]
-        [Url]
-        public string PosterUrl { get; set; }
-        [Required]
-        [Url]
-        public string VideoUrl { get; set; }
 
         public List<Guid> ActorIds { get; set; }
         public List<Guid> CategoryIds { get; set; }

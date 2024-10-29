@@ -5,6 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router'; // ملاحظة: اس�
 import { ActorLookupDto, CategoryLookupDto } from '@proxy/movies';
 import { Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import {  IRemoteStreamContent } from '@proxy/volo/abp/content';
+import { CreateUpdateMovieDto } from '@proxy/application/contracts/movies';
+import { FileUploadService } from 'src/app/services/upload.service';
 
 @Component({
   selector: 'app-add-movie',
@@ -20,12 +23,19 @@ export class AddMovieComponent implements OnInit {
   selectedActors: ActorLookupDto[] = [];
   selectedCategories: CategoryLookupDto[] = [];
   movieId: string | null = null;  // لمعرفة إذا كان الفيلم للتعديل أو الإضافة
+  //selectedFile : IRemoteStreamContent;
+  selectedFile?: File;
+  selectedPoster?: File;
 
+
+
+  formData = new FormData();
   constructor(
     private fb: FormBuilder,
     private movieService: MovieService,
     private router: Router,
-    private route: ActivatedRoute // للوصول إلى معرف الفيلم من المسار
+    private route: ActivatedRoute,
+    private fileUploadService: FileUploadService
   ) {}
 
   ngOnInit(): void {
@@ -41,12 +51,12 @@ export class AddMovieComponent implements OnInit {
   buildCreateForm() {
     this.movieForm = this.fb.group({
       title: ['', Validators.required],
+      blob: [null],
+      posterBlob: [null],
       duration: [null, [Validators.required, Validators.min(1), Validators.max(300)]],
       description: [''],
       ageRating: ['', Validators.required],
       releaseDate: ['', Validators.required],
-      posterUrl: ['', Validators.required],
-      videoUrl: ['', Validators.required],
       actorSearchTerm: [''],  
       categorySearchTerm: ['']
     });
@@ -117,17 +127,60 @@ export class AddMovieComponent implements OnInit {
     }
   }
 
+  onFileSelected(event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
+    
+  }
+  onPosterSelected(event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedPoster = input.files[0];
+    }
+    
+  }
+
+
   onSubmit() {
+    
     if (this.movieForm.invalid) {
+      
       return;
     }
+  
+    if (this.selectedFile) {
+      const myFormData = new FormData();
+      myFormData.append('blob', this.selectedFile); // file must match variable name in AppService
+      this.movieForm.get('blob').setValue(this.selectedFile);
+      
+    }
 
+    if (this.selectedPoster) {
+      const myFormData = new FormData();
+      myFormData.append('posterBlob', this.selectedPoster); // file must match variable name in AppService
+      this.movieForm.get('posterBlob').setValue(this.selectedPoster);
+      
+    }
+    
+    
     const movieData = {
       ...this.movieForm.value,
+      blob : this.selectedFile,
       actorIds: this.selectedActors.map(actor => actor.id),
       categoryIds: this.selectedCategories.map(category => category.id)
-    };
+    } as CreateUpdateMovieDto;
+    
+    var form_data = new FormData();
 
+    for(var key in movieData){
+      if((key == 'actorIds' && movieData.actorIds.length == 0) || (key == 'categoryIds' && movieData.categoryIds.length == 0))
+        continue;
+      form_data.append(key, movieData[key]);
+    }
+    
+    
     if (this.movieId) {
       // إذا كان تعديل فيلم
       this.movieService.update(this.movieId, movieData).subscribe(
@@ -139,10 +192,13 @@ export class AddMovieComponent implements OnInit {
         }
       );
     } else {
+
+      console.log(form_data);
+      
       // إذا كان إنشاء فيلم جديد
-      this.movieService.create(movieData).subscribe(
+      this.fileUploadService.createMovie(form_data).subscribe(
         (response) => {
-          this.router.navigate(['/movies/details', response.id]);
+          
         },
         (error) => {
           console.error('An error occurred while creating the movie:', error);

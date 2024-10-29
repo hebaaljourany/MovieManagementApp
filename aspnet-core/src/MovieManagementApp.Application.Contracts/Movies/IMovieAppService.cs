@@ -19,7 +19,6 @@ namespace MovieManagementApp.Application.Contracts.Movies
 
         // تعديل دالة GetCategoryLookupAsync لتقبل معامل searchTerm
         Task<ListResultDto<CategoryLookupDto>> GetCategoryLookupAsync(string searchTerm );
-        Task SaveBytesAsync(IRemoteStreamContent blob);
 
     }
 }

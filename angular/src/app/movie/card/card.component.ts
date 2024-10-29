@@ -13,12 +13,13 @@ export class CardComponent implements OnInit {
   @Input() movie: MovieDto;
   isHovered: boolean = false;
   isInList: boolean = false; // لمعرفة إذا كان الفيلم في القائمة
-
+  poster:string;
   constructor(private router: Router, private movieService: MovieService) {}
 
   ngOnInit(): void {
     // تحقق مما إذا كان الفيلم في قائمة المستخدم عند تهيئة الكارد
     this.checkIfInList();
+    this.poster = "data:image/png;base64," + this.movie.posterBlob;
   }
 
   // تحقق من وجود الفيلم في قائمة المستخدم

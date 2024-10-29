@@ -31,7 +31,6 @@ export class MovieService {
     this.restService.request<any, MovieDto>({
       method: 'POST',
       url: '/api/app/movie',
-      body: input,
     },
     { apiName: this.apiName });
   
@@ -57,6 +56,14 @@ export class MovieService {
       method: 'GET',
       url: '/api/app/movie/actor-lookup',
       params: { searchTerm },
+    },
+    { apiName: this.apiName });
+  
+
+  getBytes = () =>
+    this.restService.request<any, number[]>({
+      method: 'GET',
+      url: '/api/app/movie/bytes',
     },
     { apiName: this.apiName });
   
@@ -130,11 +137,21 @@ export class MovieService {
     { apiName: this.apiName });
   
 
+  streamVideoByBlobName = (blobName: string) =>
+    this.restService.request<any, Blob>({
+      method: 'GET',
+      responseType: 'blob',
+      url: '/stream-video',
+      params: { blobName },
+    },
+    { apiName: this.apiName });
+  
+
   update = (id: string, input: CreateUpdateMovieDto) =>
     this.restService.request<any, MovieDto>({
       method: 'PUT',
       url: `/api/app/movie/${id}`,
-      body: input,
+      params: { title: input.title, duration: input.duration, description: input.description, ageRating: input.ageRating, releaseDate: input.releaseDate, actorIds: input.actorIds, categoryIds: input.categoryIds },
     },
     { apiName: this.apiName });
 

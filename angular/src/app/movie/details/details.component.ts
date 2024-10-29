@@ -5,6 +5,7 @@ import { MovieService } from '@proxy/movies'; // Importing necessary services
 import { MovieDto } from '@proxy/movies'; // Importing the Movie DTO
 import { ActorDto } from '@proxy/actors'; // Importing the Actor DTO
 import { CategoryDto } from '@proxy/categories'; // Importing the Category DTO
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-movie-details',
@@ -21,11 +22,14 @@ export class DetailsComponent implements OnInit {
   categories: CategoryDto[]; // List of categories for the movie
   selectedMovie = {} as MovieDto;
   movieId: string; // Variable to store the movieId
-
+  videoUrl: any;
+  posterBlob : string;
   constructor(
     private route: ActivatedRoute, // Activated route to get route parameters
     private movieService: MovieService, // Movie service to fetch movie data
-    private router: Router // Router for navigation
+    private router: Router, // Router for navigation,
+    private domSanitizer: DomSanitizer
+
   ) {}
 
   ngOnInit(): void {
@@ -33,11 +37,13 @@ export class DetailsComponent implements OnInit {
     this.setMovieId();
 
     // Fetching movie details using the movie service
-    this.movieService.get(this.movieId).subscribe({
-      next: (movie) => {
-        this.movie = movie;
+    this.movieService.get(this.movieId).subscribe(movie =>{
+      this.movie = movie;
+        console.log(movie);
+        
         console.log("Movie ", movie.title); // سيتم طباعة اسم الفيلم بعد تحميل البيانات
-
+        this.videoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl('https://localhost:44350/stream-video/?blobName=' + movie.movieBlob);
+        this.posterBlob = "data:image/png;base64,"+movie.posterBlob;
         // تعيين الممثلين والتصنيفات
         this.actors = movie.actors || [];
         this.categories = movie.categories || [];
@@ -49,13 +55,16 @@ export class DetailsComponent implements OnInit {
 
         // جلب التقييم الخاص بالمستخدم الحالي
         this.getUserRating();
-      },
-      error: (err) => {
-        console.error("Error fetching movie data", err);
-      }
     });
   }
+  setMyStyles(){
+    
+    let styles = {
+      'background': 'url("' + this.posterBlob + '")',
+    };
 
+    return styles;
+  }
   // Method to fetch the movieId from route and store it
   setMovieId(): void {
     const id = this.route.snapshot.paramMap.get('id');

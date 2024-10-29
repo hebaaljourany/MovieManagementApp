@@ -11,12 +11,12 @@ namespace MovieManagementApp.Movies
     public class MovieDto : AuditedEntityDto<Guid>
     {
         public string Title { get; set; }
+        public string MovieBlob {  get; set; }
+        public string PosterBlob { get; set; }
         public DateTime ReleaseDate { get; set; }
         public int Duration { get; set; }
         public string Description { get; set; }
         public string AgeRating { get; set; }
-        public string PosterUrl { get; set; }
-        public string VideoUrl { get; set; }
 
         public List<ActorDto> Actors { get; set; }
         public List<CategoryDto> Categories { get; set; }
