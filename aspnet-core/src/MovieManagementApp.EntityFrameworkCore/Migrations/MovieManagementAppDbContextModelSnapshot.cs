@@ -29,9 +29,6 @@ namespace MovieManagementApp.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ActorImage")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ActorName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -173,9 +170,6 @@ namespace MovieManagementApp.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)")
                         .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<string>("CoverUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
