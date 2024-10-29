@@ -1,4 +1,5 @@
 ﻿using MovieManagementApp.Application.Contracts.MyLists;
+using MovieManagementApp.Permissions;
 using System;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -18,6 +19,11 @@ namespace MovieManagementApp.MyLists
         public MyListAppService(IRepository<MyList, Guid> repository)
             : base(repository)
         {
+            GetPolicyName = MovieManagementAppPermissions.MyLists.Default;
+            GetListPolicyName = MovieManagementAppPermissions.MyLists.Default;
+            CreatePolicyName = MovieManagementAppPermissions.MyLists.Create;
+            UpdatePolicyName = MovieManagementAppPermissions.MyLists.Edit;
+            DeletePolicyName = MovieManagementAppPermissions.MyLists.Delete;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MovieManagementApp.Application.Contracts.Ratings;
+using MovieManagementApp.Permissions;
 using System;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -18,6 +19,11 @@ namespace MovieManagementApp.Ratings
         public RatingAppService(IRepository<Rating, Guid> repository)
             : base(repository)
         {
+            GetPolicyName = MovieManagementAppPermissions.Ratings.Default;
+            GetListPolicyName = MovieManagementAppPermissions.Ratings.Default;
+            CreatePolicyName = MovieManagementAppPermissions.Ratings.Create;
+            UpdatePolicyName = MovieManagementAppPermissions.Ratings.Edit;
+            DeletePolicyName = MovieManagementAppPermissions.Ratings.Delete;
         }
     }
 }

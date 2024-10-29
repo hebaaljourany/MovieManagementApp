@@ -4,7 +4,7 @@ using System;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
-public class ActorRepository : EfCoreRepository<MovieManagementAppDbContext, Actor, Guid>, IMovieActorRepository
+public class ActorRepository : EfCoreRepository<MovieManagementAppDbContext, Actor, Guid>, IActorRepository
 {
     public ActorRepository(IDbContextProvider<MovieManagementAppDbContext> dbContextProvider)
         : base(dbContextProvider)

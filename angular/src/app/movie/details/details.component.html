@@ -14,25 +14,28 @@
     <div class="details">
 
       <div class="title1">{{ movie.title }} <span>{{ movie.ageRating }}</span></div>
-
-
-      <fieldset class="rating">
-        <!-- تلوين النجوم بناءً على تقييم المستخدم -->
-        <input type="radio" id="star5" name="rating" value="5" [checked]="userRating === 5" (change)="rateMovie(5)" /><label class="full" for="star5" title="Awesome - 5 stars"></label>
-        <input type="radio" id="star4" name="rating" value="4" [checked]="userRating === 4" (change)="rateMovie(4)" /><label class="full" for="star4" title="Pretty good - 4 stars"></label>
-        <input type="radio" id="star3" name="rating" value="3" [checked]="userRating === 3" (change)="rateMovie(3)" /><label class="full" for="star3" title="Meh - 3 stars"></label>
-        <input type="radio" id="star2" name="rating" value="2" [checked]="userRating === 2" (change)="rateMovie(2)" /><label class="full" for="star2" title="Kinda bad - 2 stars"></label>
-        <input type="radio" id="star1" name="rating" value="1" [checked]="userRating === 1" (change)="rateMovie(1)" /><label class="full" for="star1" title="Sucks big time - 1 star"></label>
-      </fieldset>
-      
-      <!-- إذا كانت القيمة صفر، النجوم تكون رمادية -->
-      <div *ngIf="userRating === 0" class="no-rating">
-        <label class="full" for="star5"></label>
-        <label class="full" for="star4"></label>
-        <label class="full" for="star3"></label>
-        <label class="full" for="star2"></label>
-        <label class="full" for="star1"></label>
+      <div class="rating"*abpPermission="'MovieManagementApp.Ratings.Create'">
+        <fieldset class="rating" >
+          <!-- تلوين النجوم بناءً على تقييم المستخدم -->
+          <input type="radio" id="star5" name="rating" value="5" [checked]="userRating === 5" (change)="rateMovie(5)" /><label class="full" for="star5" title="Awesome - 5 stars"></label>
+          <input type="radio" id="star4" name="rating" value="4" [checked]="userRating === 4" (change)="rateMovie(4)" /><label class="full" for="star4" title="Pretty good - 4 stars"></label>
+          <input type="radio" id="star3" name="rating" value="3" [checked]="userRating === 3" (change)="rateMovie(3)" /><label class="full" for="star3" title="Meh - 3 stars"></label>
+          <input type="radio" id="star2" name="rating" value="2" [checked]="userRating === 2" (change)="rateMovie(2)" /><label class="full" for="star2" title="Kinda bad - 2 stars"></label>
+          <input type="radio" id="star1" name="rating" value="1" [checked]="userRating === 1" (change)="rateMovie(1)" /><label class="full" for="star1" title="Sucks big time - 1 star"></label>
+        </fieldset>
+        
+        <!-- إذا كانت القيمة صفر، النجوم تكون رمادية -->
+        <div *ngIf="userRating === 0" class="no-rating">
+          <label class="full" for="star5"></label>
+          <label class="full" for="star4"></label>
+          <label class="full" for="star3"></label>
+          <label class="full" for="star2"></label>
+          <label class="full" for="star1"></label>
+        </div>
       </div>
+
+
+
 
     <!-- Display movie stats: views, downloads, and average rating -->
     <div class="likes">

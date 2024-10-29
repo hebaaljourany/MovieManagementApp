@@ -10,11 +10,11 @@ import { CreateUpdateMovieDto } from '@proxy/application/contracts/movies';
 import { FileUploadService } from 'src/app/services/upload.service';
 
 @Component({
-  selector: 'app-add-movie',
-  templateUrl: './add-movie.component.html',
-  styleUrls: ['./add-movie.component.scss']
+  selector: 'app-movie-form',
+  templateUrl: './movie-form.component.html',
+  styleUrls: ['./movie-form.component.scss']
 })
-export class AddMovieComponent implements OnInit {
+export class MovieFormComponent implements OnInit {
   movieForm: FormGroup;
   actorSearchTerm: string = '';
   categorySearchTerm: string = '';
@@ -64,9 +64,8 @@ export class AddMovieComponent implements OnInit {
   loadMovieData(movieId: string) {
     this.movieService.get(movieId).subscribe(movie => {
       console.log('Loaded movie:', movie);
-      console.log('Actors:', movie.actors);
-      console.log('Categories:', movie.categories);
-      
+      console.log('Actors loading:', movie.actors);
+      console.log('Categories loading:', movie.categories);
       this.movieForm.patchValue(movie);
       this.selectedActors = movie.actors; // تعيين الممثلين الحاليين
       this.selectedCategories = movie.categories; // تعيين التصنيفات الحالية
@@ -185,16 +184,13 @@ export class AddMovieComponent implements OnInit {
       // إذا كان تعديل فيلم
       this.movieService.update(this.movieId, movieData).subscribe(
         (response) => {
-          this.router.navigate(['/movies/details', response.id]);
+          this.router.navigate(['/movie-admin']);
         },
         (error) => {
           console.error('An error occurred while updating the movie:', error);
         }
       );
     } else {
-
-      console.log(form_data);
-      
       // إذا كان إنشاء فيلم جديد
       this.fileUploadService.createMovie(form_data).subscribe(
         (response) => {

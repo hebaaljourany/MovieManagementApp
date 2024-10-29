@@ -21,15 +21,47 @@ function configureRoutes(routesService: RoutesService) {
         iconClass: 'fas fa-watch',
         order: 2,
         layout: eLayoutType.application,
+        requiredPolicy : "MovieManagementApp.MyLists"
+
       },
       {
         path: '/movies/my-list',
-        name: '::Menu:My List',
+        name: '::Menu:MyList',
         iconClass: 'fas fa-list',
         order: 3,
         layout: eLayoutType.application,
+        requiredPolicy : "MovieManagementApp.MyLists"
+
       },
-      
+      {
+        path: '/movie-admin',
+        name: '::Menu:MoviesList',
+        iconClass: 'fas fa-category',
+        order: 4,
+        layout: eLayoutType.application,
+        requiredPolicy : "MovieManagementApp.Movies.Create"
+
+      },
+      {
+        path: '/movie-admin/actor-form',
+        name: '::Menu:Actors',
+        iconClass: 'fas fa-actor',
+        order: 6,
+        layout: eLayoutType.application,
+        requiredPolicy : "MovieManagementApp.Actors"
+
+      },
+      {
+        path: '/movie-admin/category-form',
+        name: '::Menu:Categories',
+        iconClass: 'fas fa-category',
+        order: 7,
+        layout: eLayoutType.application,
+        requiredPolicy : "MovieManagementApp.Categories"
+
+      },
+
+
     ]);
   };
 }

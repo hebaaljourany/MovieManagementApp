@@ -6,8 +6,9 @@ import { MovieComponent } from './movie.component';
 import { MyListComponent } from './my-list/my-list.component';
 import { CardComponent } from './card/card.component';
 import { DetailsComponent } from './details/details.component';
-import { AddMovieComponent } from './add-movie/add-movie.component';
-import { UpdateMovieComponent } from './update-movie/update-movie.component';
+import { MovieFormComponent } from '../movie-admin/movie-form/movie-form.component';
+import { ActorFormComponent } from '../movie-admin/actor-form/actor-form.component';
+import { CategoryFormComponent } from '../movie-admin/category-form/category-form.component';
 
 
 @NgModule({
@@ -16,8 +17,9 @@ import { UpdateMovieComponent } from './update-movie/update-movie.component';
     MyListComponent,
     CardComponent,
     DetailsComponent,
-    AddMovieComponent,
-    UpdateMovieComponent
+    MovieFormComponent,
+    ActorFormComponent,
+    CategoryFormComponent,
   ],
   imports: [
     SharedModule,
