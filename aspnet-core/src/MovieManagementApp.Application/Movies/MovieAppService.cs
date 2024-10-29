@@ -338,9 +338,6 @@ namespace MovieManagementApp.Movies
             movie.Description = input.Description;
             movie.AgeRating = input.AgeRating;
             movie.ReleaseDate = input.ReleaseDate;
-            movie.PosterUrl = input.PosterUrl;
-            movie.CoverUrl = input.CoverUrl;
-            movie.VideoUrl = input.VideoUrl;
 
             // 3. حذف العلاقات القديمة مع الممثلين
             var existingMovieActors = await _movieActorRepository.GetListAsync(x => x.MovieId == movie.Id);

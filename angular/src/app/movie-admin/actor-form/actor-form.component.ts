@@ -55,7 +55,6 @@ export class ActorFormComponent implements OnInit {
       this.selectedActor = actor;
       this.buildForm();
       this.isModalOpen = true;
-      this.imageUrl = actor.actorImage; // تعيين رابط الصورة عند التعديل
     });
   }
 

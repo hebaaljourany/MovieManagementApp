@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { MovieService } from '@proxy/movies'; // Movie Service to fetch movies
 import { MovieDto } from '@proxy/movies'; // Movie Data Transfer Object (DTO)
 import { Router } from '@angular/router';
-import { ListService, PagedResultDto } from '@abp/ng.core'; // ABP services for pagination and list handling
 import { DomSanitizer } from '@angular/platform-browser';
 import { ListService, PagedResultDto, ConfigStateService  } from '@abp/ng.core'; // ABP services for pagination and list handling
 
