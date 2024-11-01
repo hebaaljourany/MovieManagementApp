@@ -1,5 +1,11 @@
 .movies-container {
-  padding: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+
+
+
   display: flex;
   flex-direction: column;
 }
@@ -26,8 +32,15 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   grid-gap: 20px;
+}
 
 
+app-movie-card {
+  display: flex;
+  justify-content: center; /* توسيط المحتوى أفقيًا */
+  align-items: center;    /* توسيط المحتوى عموديًا */
+  height: 100%;
+  width: 100%;       /* تأكد من أن الكارد يأخذ ارتفاع الخانة */
 }
 
 .no-movies-message {

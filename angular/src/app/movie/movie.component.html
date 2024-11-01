@@ -1,15 +1,12 @@
 
 <div class="card">
-  <div class="card-header">
+  <div class="card-header" *ngIf="!isLoading">
     <div class="row">
-      <div class="col col-md-6">
-
-      </div>
-      <div class="text-end col col-md-6">
 
 
-      </div>
+
     </div>
+
   </div>
         <!-- Loading indicator -->
         <div *ngIf="isLoading" class="loading-spinner">

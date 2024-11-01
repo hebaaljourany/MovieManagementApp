@@ -28,8 +28,9 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: calc(100% + 40px); /* عرض المستطيل مع الزيادة */
-  height: 400px; /* طول المستطيل */
+  width: calc(100% + 20px); /* عرض المستطيل مع الزيادة */
+  margin-left: -10px; 
+  height: 380px; /* طول المستطيل */
   z-index: 1;
   transform: scale(1.05);
   transition: transform 0.3s ease;
@@ -43,10 +44,14 @@
 }
 
 .hovered-poster {
-  width: 70%; /* حجم البوستر المصغر */
+  width: 80%; /* حجم البوستر المصغر */
   height: auto;
   box-shadow: 0 0 10px #C4AF3D; /* توهج أصفر */
   border-radius: 8px;
+  margin: 0 auto; /* توسيط الصورة أفقياً */
+  margin-top: -10px; 
+
+  display: block; /* تأكد من أن الصورة تُعرض ككتلة */
 }
 
 .movie-details {
