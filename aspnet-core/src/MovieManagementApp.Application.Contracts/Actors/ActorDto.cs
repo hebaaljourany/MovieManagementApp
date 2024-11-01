@@ -8,7 +8,7 @@ namespace MovieManagementApp.Actors
     {
         public string ActorName { get; set; }
         public string ActorImageBlob { get; set; }
-
+        public string Thumbnail {  get; set; }
 
         public List<Guid> MovieIds { get; set; }
     }

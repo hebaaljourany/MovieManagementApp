@@ -13,5 +13,9 @@ namespace MovieManagementApp.MovieActors
         // Navigation properties
         public virtual Movie Movie { get; set; }
         public virtual Actor Actor { get; set; }
+        public void SetId()
+        {
+            Id = Guid.NewGuid();
+        }
     }
 }

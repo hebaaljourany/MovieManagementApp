@@ -67,12 +67,23 @@ export class MovieFormComponent implements OnInit {
       categorySearchTerm: ['']
     });
   }
+  formatDate(isoString: string): string {
+    // Extract date part from ISO string
+    const date = new Date(isoString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`; // Return in YYYY-MM-DD format
+  }
   loadMovieData(movieId: string) {
     this.movieService.get(movieId).subscribe(movie => {
       console.log('Loaded movie:', movie);
       console.log('Actors loading:', movie.actors);
       console.log('Categories loading:', movie.categories);
       this.movieForm.patchValue(movie);
+      let rDate = this.formatDate(movie.releaseDate);
+      this.movieForm.get('releaseDate').setValue(rDate);
       this.selectedActors = movie.actors; // تعيين الممثلين الحاليين
       this.selectedCategories = movie.categories; // تعيين التصنيفات الحالية
     });
@@ -198,9 +209,18 @@ export class MovieFormComponent implements OnInit {
 
     for(var key in movieData){
       if((key == 'actorIds' && movieData.actorIds.length == 0) || (key == 'categoryIds' && movieData.categoryIds.length == 0))
+      {
         continue;
-      form_data.append(key, movieData[key]);
+      }
+      else if(key == 'actorIds' || key == 'categoryIds'){
+        console.log(key+"[]");
+        
+        movieData[key].forEach((item) => form_data.append(key+"[]", item))
+      }
+      else
+        form_data.append(key, movieData[key]);
     }
+    
     
     
     if (this.movieId) {

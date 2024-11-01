@@ -195,9 +195,10 @@ a:hover {
 .avatars {
   margin-top: 23px;
   
+  
   img {
     cursor: pointer;
-  }
+    clip-path: circle();  }
   
   img:hover {
     opacity: 0.6;
