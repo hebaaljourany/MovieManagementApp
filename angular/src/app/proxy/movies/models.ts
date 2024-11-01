@@ -1,4 +1,4 @@
-import type { AuditedEntityDto, EntityDto } from '@abp/ng.core';
+import type { AuditedEntityDto, EntityDto, PagedAndSortedResultRequestDto } from '@abp/ng.core';
 import type { ActorDto } from '../actors/models';
 import type { CategoryDto } from '../categories/models';
 import type { RatingDto } from '../ratings/models';
@@ -9,6 +9,12 @@ export interface ActorLookupDto extends EntityDto<string> {
 
 export interface CategoryLookupDto extends EntityDto<string> {
   categoryName?: string;
+}
+
+export interface GetMovieInputDto extends PagedAndSortedResultRequestDto {
+  filter?: string;
+  actorId?: string;
+  categoryId?: string;
 }
 
 export interface MovieDto extends AuditedEntityDto<string> {

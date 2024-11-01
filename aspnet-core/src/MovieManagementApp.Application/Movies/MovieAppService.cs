@@ -36,7 +36,7 @@ namespace MovieManagementApp.Movies
         Movie, // The Movie entity
         MovieDto, // Used to show movies
         Guid, // Primary key of the movie entity
-        PagedAndSortedResultRequestDto, // Used for paging/sorting
+        GetMovieInputDto, // Used for paging/sorting
         CreateUpdateMovieDto>, // Used to create/update a movie
         IMovieAppService
     {
@@ -177,7 +177,7 @@ namespace MovieManagementApp.Movies
                                        Id = actor.Id,
                                        ActorName = actor.ActorName,
                                        Thumbnail = actor.Thumbnail,
-                                   };
+                                   }; 
 
             var actors = await AsyncExecuter.ToListAsync(movieActorsQuery);
 
@@ -209,7 +209,7 @@ namespace MovieManagementApp.Movies
 
         }
 
-        public override async Task<PagedResultDto<MovieDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+        public override async Task<PagedResultDto<MovieDto>> GetListAsync(GetMovieInputDto input)
         {
             // 1. Get the base query for movies with pagination and sorting
             var queryable = await Repository.GetQueryableAsync();
@@ -217,6 +217,9 @@ namespace MovieManagementApp.Movies
             // 2. Apply sorting and pagination
             input.MaxResultCount = 12;
             var moviesQuery = queryable
+                .WhereIf(!input.Filter.IsNullOrEmpty(), m => m.Title.Contains(input.Filter))
+                .WhereIf(input.ActorId.HasValue, m => m.MovieActors.Select(ma => ma.ActorId).ToList().Contains(input.ActorId.Value))
+                .WhereIf(input.CategoryId.HasValue, m => m.MovieCategories.Select(ma => ma.CategoryId).ToList().Contains(input.CategoryId.Value))
               // .OrderBy(input.Sorting ?? nameof(Movie.Title))
                 .Skip(input.SkipCount)
                 .Take(input.MaxResultCount);

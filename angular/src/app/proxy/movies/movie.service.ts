@@ -1,6 +1,6 @@
-import type { ActorLookupDto, CategoryLookupDto, MovieDto } from './models';
+import type { ActorLookupDto, CategoryLookupDto, GetMovieInputDto, MovieDto } from './models';
 import { RestService } from '@abp/ng.core';
-import type { ListResultDto, PagedAndSortedResultRequestDto, PagedResultDto } from '@abp/ng.core';
+import type { ListResultDto, PagedResultDto } from '@abp/ng.core';
 import { Injectable } from '@angular/core';
 import type { CreateUpdateMovieDto } from '../application/contracts/movies/models';
 
@@ -77,11 +77,11 @@ export class MovieService {
     { apiName: this.apiName });
   
 
-  getList = (input: PagedAndSortedResultRequestDto) =>
+  getList = (input: GetMovieInputDto) =>
     this.restService.request<any, PagedResultDto<MovieDto>>({
       method: 'GET',
       url: '/api/app/movie',
-      params: { skipCount: input.skipCount, maxResultCount: input.maxResultCount, sorting: input.sorting },
+      params: { filter: input.filter, actorId: input.actorId, categoryId: input.categoryId, sorting: input.sorting, skipCount: input.skipCount, maxResultCount: input.maxResultCount },
     },
     { apiName: this.apiName });
   

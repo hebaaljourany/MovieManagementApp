@@ -25,6 +25,7 @@ import { CategoryFormComponent } from '../movie-admin/category-form/category-for
     SharedModule,
     MovieRoutingModule,
     ReactiveFormsModule,
+
   ]
 })
 export class MovieModule { }

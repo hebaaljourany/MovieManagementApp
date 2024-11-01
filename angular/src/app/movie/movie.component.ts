@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MovieService } from '@proxy/movies'; // Movie Service to fetch movies
+import { GetMovieInputDto, MovieService } from '@proxy/movies'; // Movie Service to fetch movies
 import { MovieDto } from '@proxy/movies'; // Movie Data Transfer Object (DTO)
 import { Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -18,7 +18,7 @@ export class MovieComponent implements OnInit {
   movie = { items: [], totalCount: 0 } as PagedResultDto<MovieDto>; // Holds the list of movies and total count
   isLoading = true; // Loading state
   isAdmin = false; // Flag to check if the current user is admin
-
+  getMovieInput = {} as GetMovieInputDto;
   constructor(
     private movieService: MovieService, // Injecting Movie Service
     private router: Router, // Injecting Router to navigate
@@ -29,7 +29,7 @@ export class MovieComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const movieStreamCreator = (query) => this.movieService.getList(query);
+    const movieStreamCreator = (query) => this.movieService.getList(this.getMovieInput);
 
     // Hooking the stream to ListService for fetching and updating movie data
     this.list.hookToQuery(movieStreamCreator).subscribe((response) => {
