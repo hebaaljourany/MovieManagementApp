@@ -51,7 +51,7 @@
           </ngx-datatable-column>
           <ngx-datatable-column [name]="'::ActorImage' | abpLocalization" [maxWidth]="150">
             <ng-template let-row="row" ngx-datatable-cell-template>
-              <img *ngIf="row.actorImage" [src]="row.actorImage" alt="Actor Image" style="width: 50px; height: auto;" />
+              <img *ngIf="row.thumbnail" [src]="row.thumbnail" alt="Actor Image" style="width: 50px; height: auto;" />
             </ng-template>
           </ngx-datatable-column>
           
@@ -69,7 +69,7 @@
         <form [formGroup]="form" (ngSubmit)="save()">
           <div class="form-group">
             <label for="actor-name">ActorName</label><span> * </span>
-            <input type="text" id="actor-name" class="form-control" formControlName="ActorName" autofocus />
+            <input type="text" id="actor-name" class="form-control" formControlName="actorName" autofocus />
           </div>
           <div class="form-group">
             <label for="actor-image">Actor Image</label>

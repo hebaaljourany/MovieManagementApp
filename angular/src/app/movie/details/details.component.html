@@ -59,7 +59,7 @@
 
     <div class="avatars">
       <a *ngFor="let actor of actors" href="#" data-toggle="tooltip" title="{{ actor.actorName }}" data-placement="top">
-        <img src="" alt="actor avatar" />
+        <img [src]="actor.thumbnail" alt="actor avatar" />
       </a>
 
     </div> <!-- end avatars -->

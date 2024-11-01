@@ -11,6 +11,7 @@ namespace MovieManagementApp.Application.Contracts.Actors
         [StringLength(128)]
         public string ActorName { get; set; }
         public IRemoteStreamContent ActorImageBlob { get; set; }
+        public string Thumbnail { get; set; }
 
         public List<Guid> MovieIds { get; set; }
 

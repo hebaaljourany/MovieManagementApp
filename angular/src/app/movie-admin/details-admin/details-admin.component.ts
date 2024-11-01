@@ -21,6 +21,8 @@ export class DetailsAdminComponent implements OnInit {
     if (movieId) {
       this.movieService.get(movieId).subscribe((movie) => {
         this.movie = movie;
+        this.movie.coverBlob = "data:image/png;base64," + this.movie.coverBlob;
+        this.movie.posterBlob = "data:image/png;base64," + this.movie.posterBlob;
       });
     }
   }

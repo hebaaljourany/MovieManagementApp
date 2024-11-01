@@ -175,7 +175,8 @@ namespace MovieManagementApp.Movies
                                    select new ActorDto
                                    {
                                        Id = actor.Id,
-                                       ActorName = actor.ActorName
+                                       ActorName = actor.ActorName,
+                                       Thumbnail = actor.Thumbnail,
                                    };
 
             var actors = await AsyncExecuter.ToListAsync(movieActorsQuery);
@@ -214,6 +215,7 @@ namespace MovieManagementApp.Movies
             var queryable = await Repository.GetQueryableAsync();
 
             // 2. Apply sorting and pagination
+            input.MaxResultCount = 12;
             var moviesQuery = queryable
               // .OrderBy(input.Sorting ?? nameof(Movie.Title))
                 .Skip(input.SkipCount)
@@ -297,10 +299,12 @@ namespace MovieManagementApp.Movies
                     var acts = new List<MovieActor>();
                     foreach (var actorId in input.ActorIds)
                     {
-                        acts.Add(new MovieActor
+                        var act = new MovieActor
                         {
                             ActorId = actorId
-                        });
+                        };
+                        act.SetId();
+                        acts.Add(act);
                     }
                     movie.MovieActors = acts;
                 }
@@ -311,10 +315,13 @@ namespace MovieManagementApp.Movies
                     var cats = new List<MovieCategory>();
                     foreach (var categoryId in input.CategoryIds)
                     {
-                        cats.Add(new MovieCategory
+                        var cat = new MovieCategory
                         {
                             CategoryId = categoryId
-                        });
+                        };
+                        cat.SetId();
+                        cats.Add(cat);
+                        
                     }
                     movie.MovieCategories = cats;
                 }

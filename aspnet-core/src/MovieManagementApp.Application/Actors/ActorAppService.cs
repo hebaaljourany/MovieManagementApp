@@ -3,6 +3,7 @@ using MovieManagementApp.Application.Contracts.Actors;
 using MovieManagementApp.Application.Contracts.Movies;
 using MovieManagementApp.Blob;
 using MovieManagementApp.Categories;
+using MovieManagementApp.Helpers;
 using MovieManagementApp.MovieActors;
 using MovieManagementApp.MovieCategories;
 using MovieManagementApp.Movies;
@@ -70,7 +71,6 @@ namespace MovieManagementApp.Actors
             var actorDto = ObjectMapper.Map<Actor, ActorDto>(actor);
            
             var actorImageBlob = await _blobContainer.GetAllBytesAsync(actor.ActorImageBlob);
-            actorDto.ActorImageBlob = Convert.ToBase64String(actorImageBlob);
 
             // Include average rating if needed
 
@@ -87,6 +87,10 @@ namespace MovieManagementApp.Actors
 
             
             actor.ActorImageBlob = ActorImageBlobName;
+            var bytes = await input.ActorImageBlob.GetStream().GetAllBytesAsync();
+            var base64 = Convert.ToBase64String(bytes);
+            actor.Thumbnail = ThumbnailGenerator.CreateThumbnailFromBase64(base64);
+
             actor = await Repository.InsertAsync(actor, true);
 
 

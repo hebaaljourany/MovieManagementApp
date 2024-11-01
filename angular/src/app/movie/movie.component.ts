@@ -4,6 +4,7 @@ import { MovieDto } from '@proxy/movies'; // Movie Data Transfer Object (DTO)
 import { Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ListService, PagedResultDto, ConfigStateService  } from '@abp/ng.core'; // ABP services for pagination and list handling
+import { query } from '@angular/animations';
 
 @Component({
   selector: 'app-movie',

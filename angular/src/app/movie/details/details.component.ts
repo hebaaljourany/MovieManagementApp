@@ -47,6 +47,9 @@ export class DetailsComponent implements OnInit {
         this.videoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl('https://localhost:44350/stream-video/?blobName=' + movie.movieBlob);
         this.posterBlob = "data:image/png;base64,"+movie.posterBlob;
         this.coverBlob = "data:image/png;base64,"+movie.coverBlob;
+        movie.actors.forEach(element => {
+          element.thumbnail = "data:image/png;base64, " + element.thumbnail;
+        });
         console.log("details",this.posterBlob);
 
 
