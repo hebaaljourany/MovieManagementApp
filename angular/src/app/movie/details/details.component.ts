@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
 import { MovieService } from '@proxy/movies'; // Importing necessary services
 import { MovieDto } from '@proxy/movies'; // Importing the Movie DTO
 import { ActorDto } from '@proxy/actors'; // Importing the Actor DTO
@@ -25,12 +24,13 @@ export class DetailsComponent implements OnInit {
   movieId: string; // Variable to store the movieId
   videoUrl: any;
   posterBlob : string;
+  coverBlob : string;
+
   constructor(
     private route: ActivatedRoute, // Activated route to get route parameters
     private movieService: MovieService, // Movie service to fetch movie data
     private router: Router, // Router for navigation,
     private domSanitizer: DomSanitizer,
-    private permissionService: PermissionService // إضافة PermissionService
 
   ) {}
 
@@ -46,6 +46,10 @@ export class DetailsComponent implements OnInit {
         console.log("Movie ", movie.title); // سيتم طباعة اسم الفيلم بعد تحميل البيانات
         this.videoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl('https://localhost:44350/stream-video/?blobName=' + movie.movieBlob);
         this.posterBlob = "data:image/png;base64,"+movie.posterBlob;
+        this.coverBlob = "data:image/png;base64,"+movie.coverBlob;
+        console.log("details",this.posterBlob);
+
+
         // تعيين الممثلين والتصنيفات
         this.actors = movie.actors || [];
         this.categories = movie.categories || [];
@@ -60,7 +64,8 @@ export class DetailsComponent implements OnInit {
   setMyStyles(){
     
     let styles = {
-      'background': 'url("' + this.posterBlob + '")',
+      'background': 'url("' + this.coverBlob + '")',
+
     };
 
     return styles;

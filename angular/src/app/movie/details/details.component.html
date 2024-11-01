@@ -1,9 +1,9 @@
 <div class="movie-card">
-  <div class="container">
-  <div *ngIf="movie && actors && categories; else loading">
-    <!-- <a href="#"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/hobbit_cover.jpg" alt="cover" class="cover" /></a> -->
-
-    <div class="hero" [ngStyle]="setMyStyles()">
+  <div class="container" *ngIf="movie && actors && categories; else loading">
+     <a href="#">
+      <img [src]="posterBlob" alt="poster" class="poster" />
+    </a>
+    <div class="hero" [ngStyle]="{'background-image': 'url(' + coverBlob + ')'}">
       <button class="delete-btn" (click)="deleteMovie()">
         <i class="fa fa-trash"></i>
       </button>
@@ -64,20 +64,19 @@
 
     </div> <!-- end avatars -->
     
-   
+    
 
 
     </div> <!-- end column2 -->
     </div> <!-- end description -->
-  </div>
-  <div class="card">
-    <div class="card-body">
-      <video controls>
+    <div class="watch-movie">
+      <video controls class="movie-video">
         <source *ngIf="videoUrl" [src]="videoUrl" type="video/mp4">
         Your browser does not support the video tag.
-    </video>
+      </video>
     </div>
-  </div>
+    
+ 
 </div> <!-- end container -->
 
 </div> <!-- end movie-card -->

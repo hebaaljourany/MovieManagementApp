@@ -19,5 +19,14 @@ export class FileUploadService {
       body: input,
     },
     { apiName: this.apiName,...config });
+    updateMovie = (id: string, input: FormData, config?: Partial<Rest.Config>) =>
+      this.restService.request<any, string>({
+        method: 'PUT',
+        responseType: 'text',
+
+        url: `/api/app/movie/${id}`,
+        body: input,
+      },
+      { apiName: this.apiName,...config  });
 
 }

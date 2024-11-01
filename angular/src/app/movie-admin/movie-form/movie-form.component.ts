@@ -26,6 +26,9 @@ export class MovieFormComponent implements OnInit {
   //selectedFile : IRemoteStreamContent;
   selectedFile?: File;
   selectedPoster?: File;
+  selectedCover?: File;
+  isEditing: boolean = false;
+
 
 
 
@@ -36,6 +39,7 @@ export class MovieFormComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private fileUploadService: FileUploadService
+    
   ) {}
 
   ngOnInit(): void {
@@ -44,6 +48,7 @@ export class MovieFormComponent implements OnInit {
     // التحقق إذا كان المعرف موجود في المسار (حالة تعديل)
     this.movieId = this.route.snapshot.paramMap.get('id');
     if (this.movieId) {
+      this.isEditing = true;
       this.loadMovieData(this.movieId);
     }
   }
@@ -53,11 +58,12 @@ export class MovieFormComponent implements OnInit {
       title: ['', Validators.required],
       blob: [null],
       posterBlob: [null],
+      coverBlob: [null],
       duration: [null, [Validators.required, Validators.min(1), Validators.max(300)]],
       description: [''],
       ageRating: ['', Validators.required],
       releaseDate: ['', Validators.required],
-      actorSearchTerm: [''],  
+      actorSearchTerm: [''],
       categorySearchTerm: ['']
     });
   }
@@ -130,6 +136,8 @@ export class MovieFormComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
+      console.log('onFileSelectedlength > 0');
+
     }
     
   }
@@ -137,10 +145,20 @@ export class MovieFormComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedPoster = input.files[0];
+      console.log('onPosterSelectedlength > 0');
+
     }
     
   }
+  onCoverSelected(event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedCover = input.files[0];
+      console.log('onCoverSelectedlength > 0');
 
+    }
+    
+  }
 
   onSubmit() {
     
@@ -153,7 +171,7 @@ export class MovieFormComponent implements OnInit {
       const myFormData = new FormData();
       myFormData.append('blob', this.selectedFile); // file must match variable name in AppService
       this.movieForm.get('blob').setValue(this.selectedFile);
-      
+
     }
 
     if (this.selectedPoster) {
@@ -162,7 +180,12 @@ export class MovieFormComponent implements OnInit {
       this.movieForm.get('posterBlob').setValue(this.selectedPoster);
       
     }
-    
+    if (this.selectedCover) {
+      const myFormData = new FormData();
+      myFormData.append('coverBlob', this.selectedCover); // file must match variable name in AppService
+      this.movieForm.get('coverBlob').setValue(this.selectedCover);
+      
+    }
     
     const movieData = {
       ...this.movieForm.value,
@@ -182,7 +205,7 @@ export class MovieFormComponent implements OnInit {
     
     if (this.movieId) {
       // إذا كان تعديل فيلم
-      this.movieService.update(this.movieId, movieData).subscribe(
+      this.fileUploadService.updateMovie(this.movieId, form_data).subscribe(
         (response) => {
           this.router.navigate(['/movie-admin']);
         },

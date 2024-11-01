@@ -15,7 +15,6 @@ export class ActorService {
     this.restService.request<any, ActorDto>({
       method: 'POST',
       url: '/api/app/actor',
-      body: input,
     },
     { apiName: this.apiName });
   
@@ -32,6 +31,14 @@ export class ActorService {
     this.restService.request<any, ActorDto>({
       method: 'GET',
       url: `/api/app/actor/${id}`,
+    },
+    { apiName: this.apiName });
+  
+
+  getBytes = () =>
+    this.restService.request<any, number[]>({
+      method: 'GET',
+      url: '/api/app/actor/bytes',
     },
     { apiName: this.apiName });
   

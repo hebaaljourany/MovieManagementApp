@@ -1,12 +1,24 @@
-﻿using MovieManagementApp.Application.Contracts.Actors;
+﻿using Microsoft.AspNetCore.Mvc;
+using MovieManagementApp.Application.Contracts.Actors;
 using MovieManagementApp.Application.Contracts.Movies;
+using MovieManagementApp.Blob;
+using MovieManagementApp.Categories;
+using MovieManagementApp.MovieActors;
+using MovieManagementApp.MovieCategories;
 using MovieManagementApp.Movies;
 using MovieManagementApp.Permissions;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.BlobStoring;
+using Volo.Abp.Content;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using static MovieManagementApp.Permissions.MovieManagementAppPermissions;
 
 namespace MovieManagementApp.Actors
 {
@@ -20,10 +32,13 @@ namespace MovieManagementApp.Actors
         IActorAppService // Implement the IActorAppService
     {
         private readonly IActorRepository _actorRepository;
+        private readonly IBlobContainer<MovieContainer> _blobContainer;
+
 
         public ActorAppService(
             IRepository<Actor, Guid> repository,
-            IActorRepository actorRepository
+            IActorRepository actorRepository,
+            IBlobContainer<MovieContainer> blobContainer
 
             )
             : base(repository)
@@ -34,7 +49,60 @@ namespace MovieManagementApp.Actors
             CreatePolicyName = MovieManagementAppPermissions.Actors.Create;
             UpdatePolicyName = MovieManagementAppPermissions.Actors.Edit;
             DeletePolicyName = MovieManagementAppPermissions.Actors.Delete;
+            _blobContainer = blobContainer;
+
 
         }
+        public override async Task<ActorDto> GetAsync(Guid id)
+        {
+
+            // Get the IQueryable<Movie> from the repository
+            var queryable = await Repository.GetQueryableAsync();
+
+            // تأكد من أن هناك فيلمًا بهذا المعرّف
+            var actor = await AsyncExecuter.FirstOrDefaultAsync(queryable.Where(m => m.Id == id));
+            if (actor == null)
+            {
+                throw new EntityNotFoundException(typeof(Actor), id);
+            }
+
+            // Map movie to DTO
+            var actorDto = ObjectMapper.Map<Actor, ActorDto>(actor);
+           
+            var actorImageBlob = await _blobContainer.GetAllBytesAsync(actor.ActorImageBlob);
+            actorDto.ActorImageBlob = Convert.ToBase64String(actorImageBlob);
+
+            // Include average rating if needed
+
+            return actorDto;
+
+        }
+        public override async Task<ActorDto> CreateAsync([FromForm] CreateUpdateActorDto input)
+        {
+
+            var actor = ObjectMapper.Map<CreateUpdateActorDto, Actor>(input);
+
+
+            var ActorImageBlobName = await UploadFileAsync(input.ActorImageBlob);
+
+            
+            actor.ActorImageBlob = ActorImageBlobName;
+            actor = await Repository.InsertAsync(actor, true);
+
+
+            return ObjectMapper.Map<Actor, ActorDto>(actor);
+        }
+        private async Task<string> UploadFileAsync(IRemoteStreamContent blob)
+        {
+            var name = blob.FileName + " - " + Guid.NewGuid().ToString();
+            await _blobContainer.SaveAsync(name, await blob.GetStream().GetAllBytesAsync());
+            return name;
+        }
+
+        public async Task<byte[]> GetBytesAsync()
+        {
+            return await _blobContainer.GetAllBytesOrNullAsync("my-blob-1");
+        }
+
     }
 }

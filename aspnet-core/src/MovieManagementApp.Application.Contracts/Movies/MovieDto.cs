@@ -13,6 +13,8 @@ namespace MovieManagementApp.Movies
         public string Title { get; set; }
         public string MovieBlob {  get; set; }
         public string PosterBlob { get; set; }
+        public string CoverBlob { get; set; }
+
         public DateTime ReleaseDate { get; set; }
         public int Duration { get; set; }
         public string Description { get; set; }

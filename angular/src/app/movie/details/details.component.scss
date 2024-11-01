@@ -24,41 +24,62 @@ a:hover {
   color: #A9A8A3;
   padding:  0;
   width: 100%;
-
 }
 
 .container {
   margin: 0 auto;
+  padding-bottom: 50px;
+
   width: 100%;
-  height: 640px;
+  height: auto;
   background: #F0F0ED;
   border-radius: 5px;
   position: relative;
 }
-
 .hero {
-  height: 342px;  
-  margin:0;
+  padding:  0;
+  width: 100%;
+
+  height: 340px;  
+  margin: 0;
   position: relative;
   overflow: hidden;
-  z-index:1;
+  
+  z-index: 1;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-    
+
+  /* تعيين صورة الخلفية */
+  background-size: cover; /* لتغطية الخلفية بالكامل */
+  background-position: center; /* لضبط موضع الصورة في المنتصف */
 }
 
+.watch-movie {
+  margin: 20px auto;
+  text-align: center;
+}
+
+.watch-movie video {
+  width: 80%; /* حجم الفيديو حسب الحاجة */
+  max-height: 400px; /* أقصى ارتفاع للفيديو */
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 .hero:before {
   content:'';
-  width:100%; height:100%;
+  width:100%; height: 15%;
   position:absolute;
-  overflow: hidden;
-  top:0; left:0;
-  //background:red;
-  // background: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/hobbit_bg.jpg");
+  //overflow: hidden;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  
+  background: #F0F0ED;
+
   z-index:-1;
  
   transform: skewY(-2.2deg);
-  transform-origin:0 0;
+  transform-origin: bottom right;
   
   //chrome antialias fix
   -webkit-backface-visibility: hidden; 
@@ -66,11 +87,14 @@ a:hover {
   
 }
 
-.cover {
+.poster {
   position: absolute;
   top: 160px;
   left: 40px;
   z-index: 2;
+  width: 200px; /* أو الحجم المطلوب */
+  height: 300px; /* أو الحجم المطلوب */
+  object-fit: cover; /* يضمن ملاءمة الصورة بشكل مناسب */
 }
 
 .details {
@@ -83,6 +107,12 @@ a:hover {
     font-size: 44px;
     margin-bottom: 13px;
     position: relative;
+    text-shadow: 
+    -1px -1px 0 #000, /* الحافة السوداء */
+    1px -1px 0 #000, 
+    -1px 1px 0 #000, 
+    1px 1px 0 #000,
+    0px 0px 6px white;
     
     span {
       position: absolute;
@@ -93,6 +123,7 @@ a:hover {
       color: #544C21;
       font-size: 14px;
       padding: 0px 4px;
+      text-shadow:none,
       
     }
   }
@@ -106,9 +137,15 @@ a:hover {
   
   
   .likes {
-    margin-left: 24px;
-  }
-  
+  margin-left: 24px;
+  font-weight: bold; /* يجعل النص بولد */
+  text-shadow: 
+    -1px -1px 0 #000, /* الحافة السوداء */
+    1px -1px 0 #000, 
+    -1px 1px 0 #000, 
+    1px 1px 0 #000,
+    0px 0px 6px white; /* التوهج بلون الخط */
+}
   
 
 
@@ -117,7 +154,8 @@ a:hover {
 .description {
   
   bottom: 0px;
-  height: 200px;
+  height: auto;
+  min-height: 200px;
   font-size: 16px;
   line-height: 26px;
   color: #B1B0AC;
@@ -177,9 +215,10 @@ fieldset, label { margin: 0; padding: 0; }
 /****** Style Star Rating Widget *****/
 
 .rating { 
-  border: none;
+  border: black;
   float: left;
 }
+
 
 .rating > input { display: none; } 
 .rating > label:before { 

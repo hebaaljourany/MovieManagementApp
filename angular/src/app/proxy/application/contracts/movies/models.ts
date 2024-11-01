@@ -4,6 +4,7 @@ export interface CreateUpdateMovieDto {
   title: string;
   blob: IRemoteStreamContent;
   posterBlob: IRemoteStreamContent;
+  coverBlob: IRemoteStreamContent;
   duration: number;
   description?: string;
   ageRating: string;

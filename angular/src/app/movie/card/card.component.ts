@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MovieDto } from '@proxy/movies';
 import { MovieService } from '@proxy/movies';
+import { CategoryDto } from '@proxy/categories'; // Importing the Category DTO
 
 
 @Component({
@@ -13,13 +14,31 @@ export class CardComponent implements OnInit {
   @Input() movie: MovieDto;
   isHovered: boolean = false;
   isInList: boolean = false; // لمعرفة إذا كان الفيلم في القائمة
-  poster:string;
+  posterBlob : string;
+  categories: CategoryDto[]; // List of categories for the movie
+  averageRating: number; // Average rating of the movie
+
+
   constructor(private router: Router, private movieService: MovieService) {}
 
   ngOnInit(): void {
     // تحقق مما إذا كان الفيلم في قائمة المستخدم عند تهيئة الكارد
+    
+    this.posterBlob = "data:image/png;base64,"+ this.movie.posterBlob;
+    console.log("card", this.posterBlob);
+    this.categories = this.movie.categories || [];
+    this.getMovieStats();
+
     this.checkIfInList();
-    this.poster = "data:image/png;base64," + this.movie.posterBlob;
+    
+  }
+
+  getMovieStats(): void {
+
+
+    this.movieService.calculateAverageRating(this.movie.id).subscribe(averageRating => {
+      this.averageRating = averageRating; // Setting average rating
+    });
   }
 
   // تحقق من وجود الفيلم في قائمة المستخدم

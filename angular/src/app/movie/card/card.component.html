@@ -1,18 +1,33 @@
-<div class="movie-card" (click)="goToMovieDetails()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
-  <div class="poster">
-    <img [src]="poster" alt="{{ movie.title }}">
-  </div>
+<div class="movie-card"
+(click)="goToMovieDetails()"
+(mouseenter)="onMouseEnter()"
+(mouseleave)="onMouseLeave()"
+[ngClass]="{ 'hovered': isHovered }"
+>
+<div class="poster">
+  <img [src]="posterBlob" alt="{{ movie.title }}">
+</div>
 
-  <div class="movie-info" *ngIf="isHovered">
-    <h5>{{ movie.title }}</h5>
+  <div class="hovered-info" *ngIf="isHovered">
+    <div class="poster-container">
+      <img [src]="posterBlob" alt="{{ movie.title }}" class="hovered-poster" />
+    </div>
+    <div class="movie-details">
+      <h5 class="movie-title">{{ movie.title }}</h5>
+      <span *ngFor="let category of categories" class="movie-categories">{{ category.categoryName }}</span>
 
-    <div class="buttons">
-      <button class="btn-circle play-btn" (click)="playMovie($event)">
-        <i class="fa fa-play"></i>
-      </button>
-      <button class="btn-circle list-btn" (click)="toggleMovieInList($event)">
+      <div class="rating">
+        <fieldset class="rating">
+          <label *ngFor="let star of [1, 2, 3, 4, 5]" [ngClass]="{'filled': star <= averageRating}">
+            ★
+          </label>
+        </fieldset>
+      </div>
+      <p class="release-date">{{ movie.releaseDate | date: 'MMMM d, y' }}</p>
+    </div>
+      <button class="add-btn" (click)="toggleMovieInList($event)">
         <i class="fa" [ngClass]="isInList ? 'fa-check' : 'fa-plus'"></i>
       </button>
-    </div>
+    
   </div>
 </div>

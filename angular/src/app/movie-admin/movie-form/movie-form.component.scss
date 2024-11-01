@@ -65,5 +65,20 @@
         }
       }
     }
+
+    .remove-actor, .remove-category {
+      cursor: pointer; /* تغيير المؤشر عند التمرير فوقه */
+      color: red; /* لون مختلف لإشارة الإزالة */
+    }
+    .selected-actor, .selected-category {
+      display: flex;
+      justify-content: space-between; /* توزيع العناصر */
+      align-items: center; /* محاذاة عمودي */
+      padding: 5px;
+      background-color: #f9f9f9; /* لون خلفية مختلف */
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-top: 5px; /* مسافة بين العناصر المحددة */
+    }
   }
   

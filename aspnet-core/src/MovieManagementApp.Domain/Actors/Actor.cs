@@ -10,6 +10,7 @@ namespace MovieManagementApp.Actors
     {
         [Required]
         public string ActorName { get; set; }
+        public string ActorImageBlob { get; set; }
 
         //Many-to-Many with Movie Entity
         public List<MovieActor> MovieActors { get; set; }

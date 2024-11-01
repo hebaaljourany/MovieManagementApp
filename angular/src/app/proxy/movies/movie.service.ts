@@ -151,7 +151,6 @@ export class MovieService {
     this.restService.request<any, MovieDto>({
       method: 'PUT',
       url: `/api/app/movie/${id}`,
-      params: { title: input.title, duration: input.duration, description: input.description, ageRating: input.ageRating, releaseDate: input.releaseDate, actorIds: input.actorIds, categoryIds: input.categoryIds },
     },
     { apiName: this.apiName });
 

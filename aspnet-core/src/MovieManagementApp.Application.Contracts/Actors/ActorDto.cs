@@ -7,6 +7,8 @@ namespace MovieManagementApp.Actors
     public class ActorDto : AuditedEntityDto<Guid>
     {
         public string ActorName { get; set; }
+        public string ActorImageBlob { get; set; }
+
 
         public List<Guid> MovieIds { get; set; }
     }

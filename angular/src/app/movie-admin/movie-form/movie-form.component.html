@@ -1,5 +1,5 @@
 <div class="add-movie-container">
-  <h2>Create New Movie</h2>
+  <h2>{{ movieId ? 'Edit Movie' : 'Create New Movie' }}</h2> <!-- تعديل العنوان -->
   
   <form [formGroup]="movieForm" (ngSubmit)="onSubmit()">
     
@@ -10,13 +10,17 @@
     </div>
     <!-- Movie Title -->
     <div class="form-group">
-      <label for="Upload File">Upload File</label>
+      <label for="Upload File">Upload Movie</label>
       <input type="file"  (change)="onFileSelected($event)" />
     </div>
 
     <div class="form-group">
-      <label for="Upload Poster">Upload File</label>
+      <label for="Upload Poster">Upload Poster</label>
       <input type="file"  (change)="onPosterSelected($event)" />
+    </div>
+    <div class="form-group">
+      <label for="Upload Cover">Upload Cover</label>
+      <input type="file"  (change)="onCoverSelected($event)" />
     </div>
 
     <!-- Duration -->
@@ -46,7 +50,7 @@
   
 
    <!-- Actors Selection -->
-<div>
+<div class="form-group">
     <label for="actorSearch">Actors</label>
     <input id="actorSearch" formControlName="actorSearchTerm" (input)="searchActors()" placeholder="Search for actors..." />
     <ul *ngIf="(filteredActors$ | async) as actors">
@@ -54,13 +58,13 @@
         {{ actor.actorName }}
       </li>
     </ul>
-    <div *ngFor="let actor of selectedActors">
-      {{ actor.actorName }} <button (click)="removeActor(actor)">Remove</button>
+    <div *ngFor="let actor of selectedActors" class="selected-actor">
+      {{ actor.actorName }} <span class="remove-actor" (click)="removeActor(actor)">✖</span> <!-- إشارة إكس لإزالة الممثل -->
     </div>
   </div>
   
   <!-- Categories Selection -->
-  <div>
+  <div class="form-group">
     <label for="categorySearch">Categories</label>
     <input id="categorySearch" formControlName="categorySearchTerm" (input)="searchCategories()" placeholder="Search for categories..." />
     <ul *ngIf="(filteredCategories$ | async) as categories">
@@ -68,8 +72,8 @@
         {{ category.categoryName }}
       </li>
     </ul>
-    <div *ngFor="let category of selectedCategories">
-      {{ category.categoryName }} <button (click)="removeCategory(category)">Remove</button>
+    <div *ngFor="let category of selectedCategories" class="selected-category">
+      {{ category.categoryName }} <span class="remove-category" (click)="removeCategory(category)">✖</span> <!-- إشارة إكس لإزالة التصنيف -->
     </div>
   </div>
   

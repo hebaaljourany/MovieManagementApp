@@ -13,7 +13,9 @@ namespace MovieManagementApp.Application.Contracts.Movies
         
         public IRemoteStreamContent Blob { get; set; }
         public IRemoteStreamContent PosterBlob { get; set; }
-        
+        public IRemoteStreamContent CoverBlob { get; set; }
+
+
         [Required]
         [Range(1, 300)]
         public int Duration { get; set; }

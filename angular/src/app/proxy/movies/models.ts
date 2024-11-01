@@ -15,6 +15,7 @@ export interface MovieDto extends AuditedEntityDto<string> {
   title?: string;
   movieBlob?: string;
   posterBlob?: string;
+  coverBlob?: string;
   releaseDate?: string;
   duration: number;
   description?: string;

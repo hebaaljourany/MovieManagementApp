@@ -198,6 +198,8 @@ namespace MovieManagementApp.Movies
                 movieDto.Categories = categories;
                 var posterBlob = await _blobContainer.GetAllBytesAsync(movie.PosterBlob);
                 movieDto.PosterBlob = Convert.ToBase64String(posterBlob);
+                var coverBlob = await _blobContainer.GetAllBytesAsync(movie.CoverBlob);
+                movieDto.CoverBlob = Convert.ToBase64String(coverBlob);
 
             // Include average rating if needed
             movieDto.AverageRating = await CalculateAverageRatingAsync(id);
@@ -239,6 +241,7 @@ namespace MovieManagementApp.Movies
                                        };
                 movieDto.Actors = await AsyncExecuter.ToListAsync(movieActorsQuery);
 
+
                 // Get categories associated with the movie
                 var movieCategoriesQuery = from movieCategory in await _movieCategoryRepository.GetQueryableAsync()
                                            join category in await _categoryRepository.GetQueryableAsync() on movieCategory.CategoryId equals category.Id
@@ -249,7 +252,10 @@ namespace MovieManagementApp.Movies
                                                CategoryName = category.CategoryName
                                            };
                 movieDto.Categories = await AsyncExecuter.ToListAsync(movieCategoriesQuery);
-
+                var posterBlob = await _blobContainer.GetAllBytesAsync(movie.PosterBlob);
+                movieDto.PosterBlob = Convert.ToBase64String(posterBlob);
+                var coverBlob = await _blobContainer.GetAllBytesAsync(movie.CoverBlob);
+                movieDto.CoverBlob = Convert.ToBase64String(coverBlob);
                 // Add the completed movie DTO to the list
                 movieDtos.Add(movieDto);
             }
@@ -275,9 +281,13 @@ namespace MovieManagementApp.Movies
 
             var movieBlobName = await UploadFileAsync(input.Blob);
             var posterBlobName = await UploadFileAsync(input.PosterBlob);
+            var coverBlobName = await UploadFileAsync(input.CoverBlob);
+
             movie.MovieBlob = movieBlobName;
             movie.PosterBlob = posterBlobName;
-            
+            movie.CoverBlob = coverBlobName;
+
+
 
             try
             {
@@ -321,7 +331,7 @@ namespace MovieManagementApp.Movies
             }
         }
         // Update Movie
-        public override async Task<MovieDto> UpdateAsync(Guid id, CreateUpdateMovieDto input)
+        public override async Task<MovieDto> UpdateAsync(Guid id, [FromForm] CreateUpdateMovieDto input)
         {
             // التحقق من أن الإدخال غير فارغ
             if (input == null)
@@ -338,7 +348,31 @@ namespace MovieManagementApp.Movies
             movie.Description = input.Description;
             movie.AgeRating = input.AgeRating;
             movie.ReleaseDate = input.ReleaseDate;
+            string movieBlobName;
+            string posterBlobName;
+            string coverBlobName;
 
+           
+            if (input.Blob != null)
+            {
+                movieBlobName = await UploadFileAsync(input.Blob);
+                movie.MovieBlob = movieBlobName;
+
+            }
+
+            if (input.PosterBlob != null)
+            {
+                posterBlobName = await UploadFileAsync(input.PosterBlob);
+                movie.PosterBlob = posterBlobName;
+
+            }
+
+            if (input.CoverBlob != null)
+            {
+                coverBlobName = await UploadFileAsync(input.CoverBlob);
+                movie.CoverBlob = coverBlobName;
+
+            }
             // 3. حذف العلاقات القديمة مع الممثلين
             var existingMovieActors = await _movieActorRepository.GetListAsync(x => x.MovieId == movie.Id);
             foreach (var actor in existingMovieActors)
@@ -380,160 +414,8 @@ namespace MovieManagementApp.Movies
             return ObjectMapper.Map<Movie, MovieDto>(updatedMovie);
         }
 
-        // Method to update MovieActors
-        private void UpdateMovieActors(Movie movie, List<Guid> actorIds)
-        {
-            var currentActorIds = movie.MovieActors.Select(ma => ma.ActorId).ToHashSet();
-
-            // Remove any actors that are no longer in the updated list
-            movie.MovieActors.RemoveAll(ma => !actorIds.Contains(ma.ActorId));
-
-            // Add new actors that are not already associated with the movie
-            foreach (var actorId in actorIds)
-            {
-                if (!currentActorIds.Contains(actorId))
-                {
-                    movie.MovieActors.Add(new MovieActor { ActorId = actorId });
-                }
-            }
-        }
-
-        // Method to update MovieCategories
-        private void UpdateMovieCategories(Movie movie, List<Guid> categoryIds)
-        {
-            var currentCategoryIds = movie.MovieCategories.Select(mc => mc.CategoryId).ToHashSet();
-
-            // Remove any categories that are no longer in the updated list
-            movie.MovieCategories.RemoveAll(mc => !categoryIds.Contains(mc.CategoryId));
-
-            // Add new categories that are not already associated with the movie
-            foreach (var categoryId in categoryIds)
-            {
-                if (!currentCategoryIds.Contains(categoryId))
-                {
-                    movie.MovieCategories.Add(new MovieCategory { CategoryId = categoryId });
-                }
-            }
-        }
-
-        /*public override async Task<MovieDto> UpdateAsync(Guid id, CreateUpdateMovieDto input)
-        {
-            // Check input for null
-            if (input == null) throw new ArgumentNullException(nameof(input), "Input cannot be null.");
-            // 1. Retrieve the current movie
-            var movie = await Repository.GetAsync(id);
-
-            // 2. Update basic movie properties
-            movie.Title = input.Title;
-            movie.Duration = input.Duration;
-            movie.Description = input.Description;
-            movie.AgeRating = input.AgeRating;
-            movie.ReleaseDate = input.ReleaseDate;
-            movie.PosterUrl = input.PosterUrl;
-            movie.CoverUrl = input.CoverUrl;
-            movie.VideoUrl = input.VideoUrl;
-
-            // 3. Update actor relations
-            if (input.ActorIds is not null && input.ActorIds.Any())
-            {
-                var acts = new List<MovieActor>();
-                foreach (var actorId in input.ActorIds)
-                {
-                    acts.Add(new MovieActor
-                    {
-                        ActorId = actorId
-                    });
-                }
-                movie.MovieActors = movie.MovieActors ?? new List<MovieActor>();
-                movie.MovieActors.Clear();
-                movie.MovieActors = acts;
-            }
-            
-
-
-            // 4. Update category relations
-            if (input.CategoryIds is not null && input.CategoryIds.Any())
-            {
-                var cats = new List<MovieCategory>();
-                foreach (var categoryId in input.CategoryIds)
-                {
-                    cats.Add(new MovieCategory
-                    {
-                        CategoryId = categoryId
-                    });
-                }
-                movie.MovieCategories = movie.MovieCategories ?? new List<MovieCategory>();
-                movie.MovieCategories.Clear();
-                movie.MovieCategories = cats;
-            }
-
-
-
-
-            // 5. Save updates to the database
-            movie = await Repository.UpdateAsync(movie);
-
-            // 6. Return the updated MovieDto
-            return ObjectMapper.Map<Movie, MovieDto>(movie);
-        }*/
-
-        /*     public override async Task<MovieDto> UpdateAsync(Guid id, CreateUpdateMovieDto input)
-             {
-                 // 1. إحضار الفيلم الحالي
-                 var movie = await Repository.GetAsync(id);
-
-                 if (movie == null)
-                 {
-                     throw new Exception($"Movie with ID {id} not found.");
-                 }
-
-            // 2. تحديث بيانات الفيلم الأساسية
-            movie.Title = input.Title;
-            movie.Duration = input.Duration;
-            movie.Description = input.Description;
-            movie.AgeRating = input.AgeRating;
-            movie.ReleaseDate = input.ReleaseDate;
-
-                 // 3. تحديث العلاقات الخاصة بالممثلين
-                 if (input.ActorIds != null)
-                 {
-                     // إزالة الممثلين الحاليين
-                     movie.MovieActors.Clear();
-
-                     // إضافة الممثلين الجدد
-                     foreach (var actorId in input.ActorIds)
-                     {
-                         movie.MovieActors.Add(new MovieActor
-                         {
-                             MovieId = movie.Id,
-                             ActorId = actorId
-                         });
-                     }
-                 }
-
-                 // 4. تحديث العلاقات الخاصة بالتصنيفات
-                 if (input.CategoryIds != null)
-                 {
-                     // إزالة التصنيفات الحالية
-                     movie.MovieCategories.Clear();
-
-                     // إضافة التصنيفات الجديدة
-                     foreach (var categoryId in input.CategoryIds)
-                     {
-                         movie.MovieCategories.Add(new MovieCategory
-                         {
-                             MovieId = movie.Id,
-                             CategoryId = categoryId
-                         });
-                     }
-                 }
-
-                 // 5. حفظ التحديثات في قاعدة البيانات
-                 await Repository.UpdateAsync(movie);
-
-                 // 6. إرجاع MovieDto المحدثة
-                 return ObjectMapper.Map<Movie, MovieDto>(movie);
-             }*/
+        
+        
         // Delete Movie
         public override async Task DeleteAsync(Guid id)
         {
@@ -711,22 +593,28 @@ namespace MovieManagementApp.Movies
 
         public async Task<ListResultDto<ActorLookupDto>> GetActorLookupAsync(string searchTerm)
         {
+            // الحصول على استعلام الممثلين من المستودع
             var query = await _actorRepository.GetQueryableAsync();
 
-
-            // إذا كان هناك مصطلح بحث، قم بتصفية الممثلين بناءً عليه
+            // تطبيق الفلترة إذا كان هناك مصطلح بحث
             if (!string.IsNullOrEmpty(searchTerm))
             {
-                query = query.Where(a => a.ActorName.Contains(searchTerm)); // استبدل "Name" باسم الخاصية المناسبة
+                query = query.Where(a => a.ActorName.Contains(searchTerm));
             }
 
-            // احصل على أول 10 ممثلين
-            var actors = await query.Take(10).ToListAsync();
+            // اختيار الخصائص المطلوبة فقط بدون تحميل الصور
+            var actors = await query
+                .Select(a => new ActorLookupDto
+                {
+                    Id = a.Id,
+                    ActorName = a.ActorName
+                })
+                .Take(10)
+                .ToListAsync();
 
-            return new ListResultDto<ActorLookupDto>(
-                ObjectMapper.Map<List<Actor>, List<ActorLookupDto>>(actors)
-            );
+            return new ListResultDto<ActorLookupDto>(actors);
         }
+
 
         public async Task<ListResultDto<CategoryLookupDto>> GetCategoryLookupAsync(string searchTerm)
         {

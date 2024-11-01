@@ -18,6 +18,8 @@ namespace MovieManagementApp.Movies
         public string MovieBlob {  get; set; }
         [Required]
         public string PosterBlob { get; set; }
+        [Required]
+        public string CoverBlob { get; set; }
 
         // Release date of the movie, required
         public DateTime ReleaseDate { get; set; }
