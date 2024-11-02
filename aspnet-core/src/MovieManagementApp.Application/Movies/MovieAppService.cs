@@ -216,11 +216,12 @@ namespace MovieManagementApp.Movies
 
             // 2. Apply sorting and pagination
             input.MaxResultCount = 12;
+
             var moviesQuery = queryable
                 .WhereIf(!input.Filter.IsNullOrEmpty(), m => m.Title.Contains(input.Filter))
-                .WhereIf(input.ActorId.HasValue, m => m.MovieActors.Select(ma => ma.ActorId).ToList().Contains(input.ActorId.Value))
-                .WhereIf(input.CategoryId.HasValue, m => m.MovieCategories.Select(ma => ma.CategoryId).ToList().Contains(input.CategoryId.Value))
-              // .OrderBy(input.Sorting ?? nameof(Movie.Title))
+                .WhereIf(input.ActorId.HasValue, m => m.MovieActors.Any(ma => ma.ActorId == input.ActorId.Value))
+                .WhereIf(input.CategoryId.HasValue, m => m.MovieCategories.Any(mc => mc.CategoryId == input.CategoryId.Value))
+                // .OrderBy(input.Sorting ?? nameof(Movie.Title))
                 .Skip(input.SkipCount)
                 .Take(input.MaxResultCount);
 
