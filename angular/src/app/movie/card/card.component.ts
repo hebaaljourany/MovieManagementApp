@@ -25,7 +25,6 @@ export class CardComponent implements OnInit {
     // تحقق مما إذا كان الفيلم في قائمة المستخدم عند تهيئة الكارد
     
     this.posterBlob = "data:image/png;base64,"+ this.movie.posterBlob;
-    console.log("card", this.posterBlob);
     this.categories = this.movie.categories || [];
     this.getMovieStats();
 

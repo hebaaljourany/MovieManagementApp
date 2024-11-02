@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { GetMovieInputDto, MovieService } from '@proxy/movies'; // Movie Service to fetch movies
-import { MovieDto } from '@proxy/movies'; // Movie Data Transfer Object (DTO)
+import { Component, HostListener, OnInit } from '@angular/core';
+import { GetMovieInputDto, MovieService } from '@proxy/movies';
+import { MovieDto } from '@proxy/movies';
 import { Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ListService, PagedResultDto, ConfigStateService  } from '@abp/ng.core'; // ABP services for pagination and list handling
@@ -16,14 +16,13 @@ import { debounceTime, map, switchMap, distinctUntilChanged } from 'rxjs/operato
   selector: 'app-movie',
   templateUrl: './movie.component.html',
   styleUrls: ['./movie.component.scss'],
-  providers: [
-    ListService,
-  ],
+  providers: [ListService],
 })
 export class MovieComponent implements OnInit {
-  movie = { items: [], totalCount: 0 } as PagedResultDto<MovieDto>; // Holds the list of movies and total count
-  isLoading = true; // Loading state
-  isAdmin = false; // Flag to check if the current user is admin
+  movie = { items: [], totalCount: 0 } as PagedResultDto<MovieDto>;
+  isLoading = true;
+  currentPage = 1; // Current page number
+  pageSize = 0; // Number of items per page
   getMovieInput = {} as GetMovieInputDto;
   filteredCategories: CategoryLookupDto[] = [];
   selectedCategory: string = '';
@@ -37,23 +36,48 @@ export class MovieComponent implements OnInit {
   hoveredActor: ActorLookupDto | null = null;
   movieSearchTerm: string = '';
 
+  public screenWidth: number; // Variable to store screen width
+  public screenHeight: number; // Variable to store screen height
   constructor(
-    private movieService: MovieService, // Injecting Movie Service
-    private router: Router, // Injecting Router to navigate
-    public readonly list: ListService, // ListService for managing queries
-    private domSanitizer: DomSanitizer
+    private movieService: MovieService,
+    private router: Router,
+    public readonly list: ListService
   ) {
-     //this.videoUrl = 'https://localhost:44350/stream-video';
+    
+    this.screenWidth = window.innerWidth; // Initialize with current width
+    this.screenHeight = window.innerHeight; // Initialize with current 
   }
 
   ngOnInit(): void {
+    this.getMovies(); // Fetch movies on initialization
+  }
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.screenWidth = window.innerWidth; // Update width on resize
+    this.screenHeight = window.innerHeight; // Update height on resize
+    console.log("Height: " + this.screenHeight, "Width: " + this.screenWidth);
+    
+  }
+  getMovies(): void {
+    if(this.screenWidth > 1400){
+      this.getMovieInput.maxResultCount = 18;
+      this.pageSize = 18
+    } 
+    else{      
+      this.getMovieInput.maxResultCount = 12;
+      this.pageSize = 12;
+    }    
+    this.getMovieInput.skipCount = (this.currentPage - 1) * this.pageSize; // Calculate skip count
+    this.getMovieInput.maxResultCount = this.pageSize; // Set max result count
+
     const movieStreamCreator = (query) => this.movieService.getList(this.getMovieInput);
 
-    // Hooking the stream to ListService for fetching and updating movie data
     this.list.hookToQuery(movieStreamCreator).subscribe((response) => {
       console.log(response);
       this.movie = response; //Updating the movie list
       this.isLoading = false; //Stopping the loading state
+      this.movie = response;
+      this.isLoading = false;
     });
   }
 
@@ -137,5 +161,17 @@ searchMoviesByName(actorName: string):void{
   this.getMovieInput.filter = actorName;
   this.clearFilters();
 }
+  // Method to handle page change
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) { // Ensure valid page number
+      this.currentPage = page; // Update current page
+      this.getMovies(); // Fetch movies for the new page
+    }
+  }
 
+
+  // Calculate total pages based on total count and page size
+  totalPages(): number {
+    return Math.ceil(this.movie.totalCount / this.pageSize);
+  }
 }

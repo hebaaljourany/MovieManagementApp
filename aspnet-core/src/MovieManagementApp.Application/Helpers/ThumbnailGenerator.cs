@@ -12,9 +12,8 @@ namespace MovieManagementApp.Helpers
     public class ThumbnailGenerator
     {
 
-        public static string CreateThumbnailFromBase64(string base64String)
+        public static string CreateThumbnailFromBase64(string base64String, int height , int width)
         {
-            int width = 75 , height = 75;
             // Step 1: Convert Base64 string to byte array
             byte[] bytes = Convert.FromBase64String(base64String);
 
@@ -49,6 +48,14 @@ namespace MovieManagementApp.Helpers
                     }
                 }
             }
+        }
+        public static byte[] GetBytes(string base64)
+        {
+            return Convert.FromBase64String(base64);
+        }
+        public static string GetBase64(byte[] bytes)
+        {
+            return Convert.ToBase64String(bytes);
         }
     }
 }

@@ -7,6 +7,7 @@ using MovieManagementApp.Actors;
 using MovieManagementApp.Application.Contracts.Movies;
 using MovieManagementApp.Blob;
 using MovieManagementApp.Categories;
+using MovieManagementApp.Helpers;
 using MovieManagementApp.MovieActors;
 using MovieManagementApp.MovieCategories;
 using MovieManagementApp.MyAccounts;
@@ -215,8 +216,6 @@ namespace MovieManagementApp.Movies
             var queryable = await Repository.GetQueryableAsync();
 
             // 2. Apply sorting and pagination
-            input.MaxResultCount = 12;
-
             var moviesQuery = queryable
                 .WhereIf(!input.Filter.IsNullOrEmpty(), m => m.Title.Contains(input.Filter))
                 .WhereIf(input.ActorId.HasValue, m => m.MovieActors.Any(ma => ma.ActorId == input.ActorId.Value))
@@ -285,9 +284,9 @@ namespace MovieManagementApp.Movies
             movie.TotalViews = 0;
             movie.TotalDownloads = 0;
 
-            var movieBlobName = await UploadFileAsync(input.Blob);
-            var posterBlobName = await UploadFileAsync(input.PosterBlob);
-            var coverBlobName = await UploadFileAsync(input.CoverBlob);
+            var movieBlobName = await UploadFileAsync(input.Blob, null, null);
+            var posterBlobName = await UploadFileAsync(input.PosterBlob, 273, 184);
+            var coverBlobName = await UploadFileAsync(input.CoverBlob, 136, 369);
 
             movie.MovieBlob = movieBlobName;
             movie.PosterBlob = posterBlobName;
@@ -366,21 +365,21 @@ namespace MovieManagementApp.Movies
            
             if (input.Blob != null)
             {
-                movieBlobName = await UploadFileAsync(input.Blob);
+                movieBlobName = await UploadFileAsync(input.Blob, null, null);
                 movie.MovieBlob = movieBlobName;
 
             }
 
             if (input.PosterBlob != null)
             {
-                posterBlobName = await UploadFileAsync(input.PosterBlob);
+                posterBlobName = await UploadFileAsync(input.PosterBlob, 273, 184);
                 movie.PosterBlob = posterBlobName;
 
             }
 
             if (input.CoverBlob != null)
             {
-                coverBlobName = await UploadFileAsync(input.CoverBlob);
+                coverBlobName = await UploadFileAsync(input.CoverBlob, 136, 369);
                 movie.CoverBlob = coverBlobName;
 
             }
@@ -645,11 +644,22 @@ namespace MovieManagementApp.Movies
                 ObjectMapper.Map<List<Category>, List<CategoryLookupDto>>(categories)
             );
         }
-        private async Task<string> UploadFileAsync(IRemoteStreamContent blob)
+        private async Task<string> UploadFileAsync(IRemoteStreamContent blob, int? height, int? width)
         {
-            var name = blob.FileName + " - " +Guid.NewGuid().ToString();
+            var name = blob.FileName + " - " + Guid.NewGuid().ToString();
+
+            if (height.HasValue && width.HasValue)
+            {
+                var base64 = ThumbnailGenerator.GetBase64(await blob.GetStream().GetAllBytesAsync());
+                var resizedImage = ThumbnailGenerator.CreateThumbnailFromBase64(base64, height.Value, width.Value);
+                var bytes = ThumbnailGenerator.GetBytes(resizedImage);
+                await _blobContainer.SaveAsync(name, bytes);
+                return name;
+            }
+            
             await _blobContainer.SaveAsync(name, await blob.GetStream().GetAllBytesAsync());
             return name;
+
         }
 
         public async Task<byte[]> GetBytesAsync()
