@@ -89,7 +89,7 @@ namespace MovieManagementApp.Actors
             actor.ActorImageBlob = ActorImageBlobName;
             var bytes = await input.ActorImageBlob.GetStream().GetAllBytesAsync();
             var base64 = Convert.ToBase64String(bytes);
-            actor.Thumbnail = ThumbnailGenerator.CreateThumbnailFromBase64(base64);
+            actor.Thumbnail = ThumbnailGenerator.CreateThumbnailFromBase64(base64, 75, 75);
 
             actor = await Repository.InsertAsync(actor, true);
 
