@@ -119,7 +119,8 @@ export class MovieFormComponent implements OnInit {
   searchCategories() {
     const searchTerm = this.movieForm.get('categorySearchTerm')?.value;
     if (searchTerm && searchTerm.length > 2) {
-      this.filteredCategories$ = this.movieService.getCategoryLookup(searchTerm).pipe(
+      this.filteredCategories$ = this.movieService
+      .getCategoryLookup(searchTerm).pipe(
         debounceTime(300),
         distinctUntilChanged(),
         map(result => result.items.slice(0, 10))

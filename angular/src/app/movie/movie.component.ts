@@ -3,6 +3,15 @@ import { GetMovieInputDto, MovieService } from '@proxy/movies';
 import { MovieDto } from '@proxy/movies';
 import { Router } from '@angular/router';
 import { ListService, PagedResultDto } from '@abp/ng.core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { ListService, PagedResultDto, ConfigStateService  } from '@abp/ng.core'; // ABP services for pagination and list handling
+import { query } from '@angular/animations';
+import { CategoryLookupDto } from '@proxy/movies';
+import { ActorLookupDto } from '@proxy/movies';
+
+import { of } from 'rxjs';
+import { debounceTime, map, switchMap, distinctUntilChanged } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-movie',
@@ -16,6 +25,18 @@ export class MovieComponent implements OnInit {
   currentPage = 1; // Current page number
   pageSize = 0; // Number of items per page
   getMovieInput = {} as GetMovieInputDto;
+  filteredCategories: CategoryLookupDto[] = [];
+  selectedCategory: string = '';
+  categorySearchTerm: string = ''; // مصطلح البحث الخاص بالتصنيفات
+  isDropdownOpen = false;
+  hoveredCategory: CategoryLookupDto | null = null;
+  filteredActors: ActorLookupDto[] = [];
+  selectedActor: string = '';
+  actorSearchTerm: string = ''; // مصطلح البحث الخاص بالتصنيفات
+  isDropdownActorsOpen = false;
+  hoveredActor: ActorLookupDto | null = null;
+  movieSearchTerm: string = '';
+
   public screenWidth: number; // Variable to store screen width
   public screenHeight: number; // Variable to store screen height
   constructor(
@@ -63,7 +84,82 @@ export class MovieComponent implements OnInit {
   navigateToAddMovie(): void {
     this.router.navigate(['/movies/add-movie']);
   }
+  searchCategories(): void {
+    if (this.categorySearchTerm.length > 2) {
+      this.movieService
+        .getCategoryLookup(this.categorySearchTerm)
+        .pipe(
+          debounceTime(300),
+          distinctUntilChanged(),
+          map((result) => result.items.slice(0, 10))
+        )
+        .subscribe((categories) => {
+          this.filteredCategories = categories;
+        });
+    } else {
+      this.filteredCategories = [];
+    }
+  }
 
+  searchActors(): void {
+    if (this.actorSearchTerm.length > 2) {
+      this.movieService
+        .getActorLookup(this.actorSearchTerm)
+        .pipe(
+          debounceTime(300),
+          distinctUntilChanged(),
+          map((result) => result.items.slice(0, 10))
+        )
+        .subscribe((actors) => {
+          this.filteredActors = actors;
+        });
+    } else {
+      this.filteredActors = [];
+    }
+  }
+
+
+  // تحديد الممثل فقط دون فلترة
+selectActor(actor: ActorLookupDto): void {
+  this.actorSearchTerm = actor.actorName;
+  this.getMovieInput.actorId = actor.id;
+  this.filteredActors = [];
+  this.isDropdownActorsOpen = false; // إغلاق القائمة بعد الاختيار
+}
+
+// تحديد التصنيف فقط دون فلترة
+selectCategory(category: CategoryLookupDto): void {
+  this.categorySearchTerm = category.categoryName;
+  this.getMovieInput.categoryId = category.id;
+  this.filteredCategories = [];
+  this.isDropdownOpen = false; // إغلاق القائمة بعد الاختيار
+}
+
+// دالة لتطبيق الفلترة بناءً على الاختيارات
+applyFilters(): void {
+  this.isLoading = true;
+  this.movieSearchTerm = '';
+
+  this.list.get(); // استدعاء القائمة لتنفيذ الفلترة
+}
+
+clearFilters(): void {
+  this.actorSearchTerm = '';
+  this.categorySearchTerm = '';
+  this.getMovieInput.actorId = undefined;
+  this.getMovieInput.categoryId = undefined;
+  this.filteredActors = [];
+  this.filteredCategories = [];
+  this.isDropdownActorsOpen = false;
+  this.isDropdownOpen = false;
+  this.isLoading = true;
+  this.list.get();
+}
+
+searchMoviesByName(actorName: string):void{
+  this.getMovieInput.filter = actorName;
+  this.clearFilters();
+}
   // Method to handle page change
   onPageChange(page: number): void {
     if (page >= 1 && page <= this.totalPages()) { // Ensure valid page number
