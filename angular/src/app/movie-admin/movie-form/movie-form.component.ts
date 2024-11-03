@@ -28,6 +28,10 @@ export class MovieFormComponent implements OnInit {
   selectedPoster?: File;
   selectedCover?: File;
   isEditing: boolean = false;
+  isDropdownActorsOpen = false;
+
+  isDropdownCategoriesOpen = false;
+
 
 
 
@@ -107,6 +111,11 @@ export class MovieFormComponent implements OnInit {
       this.selectedActors.push(actor);
     }
     this.movieForm.get('actorSearchTerm')?.setValue('');
+    this.filteredActors$ = of([]);
+    // إغلاق القائمة بعد الاختيار
+    
+
+
   }
 
   removeActor(actor: ActorLookupDto) {
@@ -135,6 +144,7 @@ export class MovieFormComponent implements OnInit {
       this.selectedCategories.push(category);
     }
     this.movieForm.get('categorySearchTerm')?.setValue('');
+    this.filteredCategories$ = of([]);
   }
 
   removeCategory(category: CategoryLookupDto) {
