@@ -60,7 +60,7 @@ export class DetailsComponent implements OnInit {
         console.log("Categories: ", movie.categories);  // تحقق من التصنيفات
 
         // Fetching stats for the movie
-        this.getMovieStats();
+        this.getMovieRating();
         this.getUserRating();
     });
   }
@@ -84,16 +84,8 @@ export class DetailsComponent implements OnInit {
   }
 
   // Method to fetch total views, downloads, and average rating
-  getMovieStats(): void {
-    this.movieService.getTotalViews(this.movieId).subscribe(totalViews => {
-      this.totalViews = totalViews; // Setting total views
-      console.log ('test',totalViews)
+  getMovieRating(): void {
 
-    });
-
-    this.movieService.getTotalDownloads(this.movieId).subscribe(totalDownloads => {
-      this.totalDownloads = totalDownloads; // Setting total downloads
-    });
 
     this.movieService.calculateAverageRating(this.movieId).subscribe(averageRating => {
       this.averageRating = averageRating; // Setting average rating
@@ -130,20 +122,9 @@ export class DetailsComponent implements OnInit {
       });
     }
   }
-  // Method to navigate to the update movie component
-  navigateToUpdate(): void {
-    //this.router.navigate(['/movies/update', this.movie.id]); // Navigating to update movie page
-    this.router.navigate(['/movies/movie-form', this.movie.id]);
-
+  formatDate(date: string): string {
+    // Format date to a readable format, e.g., 'dd/MM/yyyy'
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(date).toLocaleDateString('en-GB', options);
   }
-  deleteMovie() {
-    if (confirm('Are you sure you want to delete this movie?')) {
-      this.movieService.delete(this.movie.id).subscribe(() => {
-        this.router.navigate(['/movies']);
-      }, error => {
-        console.error('Error deleting movie', error);
-      });
-    }
-  }
-  
 }

@@ -1,0 +1,129 @@
+.movies-container {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  
+  
+  
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .add-movie-btn-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+  
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+    }
+  }
+  
+  .loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+  }
+  
+  .movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 20px;
+  }
+  
+  
+  app-movie-card {
+    display: flex;
+    justify-content: center; /* توسيط المحتوى أفقيًا */
+    align-items: center;    /* توسيط المحتوى عموديًا */
+    height: 100%;
+    width: 100%;       /* تأكد من أن الكارد يأخذ ارتفاع الخانة */
+  }
+  
+  .no-movies-message {
+    text-align: center;
+    font-size: 18px;
+    color: gray;
+    margin-top: 20px;
+  }
+  .form-group {
+    position: relative;
+  }
+  
+  .dropdown-menu.show {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000; // لضمان الظهور أمام العناصر الأخرى
+    padding: 0;
+    list-style: none;
+    margin-top: 0.25rem;
+  }
+  
+  .dropdown-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  
+  .dropdown-menu li.active,
+  .dropdown-menu li:hover {
+    background-color: #007bff;
+    color: #ffffff;
+  }
+  .full-width-search {
+    width: 100%;
+    padding-right: 35px; /* مسافة كافية للأيقونة */
+    border-color: #c4b03d;
+  }
+  
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px; /* وضع الأيقونة في أقصى اليمين */
+    transform: translateY(-50%);
+    color: #c4b03d;
+    font-size: 1.2em;
+  }
+  .search-input {
+    font-size: 14px; /* محاذاة حجم النص مع الأزرار */
+    padding: 0.5rem 0.75rem;
+    border-color: #c4b03d;
+  
+  }
+  
+  
+  .card .card-header .btn {
+    font-size: 1em;
+    font-weight: bold;
+    background: #c4b03d;
+    color: #ffffff;
+    margin: 0;
+    padding: 0.375rem 0.5rem;
+    border-color: #f5f5f7;
+    padding: 0.5rem 0.75rem;
+    min-width: 120px; /* توحيد عرض الأزرار */
+  
+  }
+  
+  .pagination .page-item.active .page-link {
+    color: #fff !important;
+    border-radius: 0.5rem;
+    background: #c4b03d !important;
+  }
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #c4b03d; /* لون أزرق جذاب */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* إضافة ظل للنص */
+    font-family: 'Arial', sans-serif; /* تغيير الخط */
+    
+  }

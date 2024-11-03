@@ -62,7 +62,8 @@
   font-weight: bold;
   color: #C4AF3D;
   margin-top: 10px;
-  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  text-shadow: 1px 1px 3px #000, 1px 1px 3px #000, 1px 1px 3px #000, 1px 1px 3px #000;
+
 }
 
 .movie-categories {
@@ -86,8 +87,9 @@
   margin-top: 5px;
 }
 
+
 .add-btn {
-  margin-top: auto; /* جعل الزر في الأسفل دون فراغ */
+  margin-top: auto; /* يجعل الزر في الأسفل دون فراغ */
   background-color: #C4AF3D;
   color: white;
   border: none;
@@ -96,8 +98,10 @@
   height: 40px; /* ارتفاع ثابت للزر */
   font-size: 1.5em;
   cursor: pointer;
+  position: relative; /* لتحديد موقع النص التلميحي */
 }
 
 .add-btn:hover {
-  background-color: darkyellow;
+  background-color: #B3A62A; /* لون عند وضع المؤشر */
 }
+

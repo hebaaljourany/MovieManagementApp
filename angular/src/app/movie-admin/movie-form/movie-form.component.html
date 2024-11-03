@@ -1,5 +1,10 @@
+<div class="container mt-4">
+  <h1 class="page-title text-center mb-4">{{ movieId ? 'Edit Movie' : 'Create New Movie' }}</h1>
+
+<div class="card">
+<div class="card-body">
 <div class="add-movie-container">
-  <h2>{{ movieId ? 'Edit Movie' : 'Create New Movie' }}</h2> <!-- تعديل العنوان -->
+
   
   <form [formGroup]="movieForm" (ngSubmit)="onSubmit()">
     
@@ -85,4 +90,7 @@
       <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
     </div>
   </form>
+</div>
+</div>
+</div>
 </div>

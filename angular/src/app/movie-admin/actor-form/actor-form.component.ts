@@ -22,7 +22,6 @@ export class ActorFormComponent implements OnInit {
   form: FormGroup;
   isModalOpen = false;
   selectedImage: any;
-  imageUrl: string | null = null; // لحفظ رابط الصورة
 
   constructor(
     public readonly list: ListService,
@@ -54,7 +53,6 @@ export class ActorFormComponent implements OnInit {
     this.selectedActor = {} as ActorDto;
     this.buildForm();
     this.isModalOpen = true;
-    this.imageUrl = null; // إعادة تعيين رابط الصورة
   }
 
   editActor(id: string) {
@@ -76,7 +74,7 @@ export class ActorFormComponent implements OnInit {
   buildForm() {
     this.form = this.fb.group({
       actorName: [this.selectedActor.actorName || '', Validators.required],
-      actorImage: [null, Validators.required] // إضافة حقل الصورة
+      actorImage: [null] // إضافة حقل الصورة
     });
   }
 

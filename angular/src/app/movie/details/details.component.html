@@ -4,18 +4,15 @@
       <img [src]="posterBlob" alt="poster" class="poster" />
     </a>
     <div class="hero" [ngStyle]="{'background-image': 'url(' + coverBlob + ')'}">
-      <button class="delete-btn" (click)="deleteMovie()">
-        <i class="fa fa-trash"></i>
-      </button>
-      <button class="edit-btn" (click)="navigateToUpdate()">
-        <i class="fa fa-pencil"></i>
-      </button>
+
 
     <div class="details">
 
-      <div class="title1">{{ movie.title }} <span>{{ movie.ageRating }}</span></div>
+      <div class="title1">{{ movie.title }} <span >{{ movie.ageRating }}</span></div>
       <div class="rating"*abpPermission="'MovieManagementApp.Ratings.Create'">
         <fieldset class="rating" >
+     
+
           <!-- تلوين النجوم بناءً على تقييم المستخدم -->
           <input type="radio" id="star5" name="rating" value="5" [checked]="userRating === 5" (change)="rateMovie(5)" /><label class="full" for="star5" title="Awesome - 5 stars"></label>
           <input type="radio" id="star4" name="rating" value="4" [checked]="userRating === 4" (change)="rateMovie(4)" /><label class="full" for="star4" title="Pretty good - 4 stars"></label>
@@ -39,8 +36,8 @@
 
     <!-- Display movie stats: views, downloads, and average rating -->
     <div class="likes">
-      <span>{{ totalViews }} views</span> | <span>{{ totalDownloads }} downloads</span> | 
-      <span>Average Rating: {{ averageRating }}/5</span>
+      
+      
     </div>
     </div> <!-- end details -->
 
@@ -54,8 +51,14 @@
     </div> <!-- end column1 -->
 
     <div class="column2">
+    <p><strong>Release Date:</strong> {{ formatDate(movie.releaseDate) }}</p>
+    <p><strong>Duration:</strong> {{ movie.duration }} minutes</p>
+    <p><strong>Total Rating:</strong> {{ movie.averageRating }}/5 </p>
+    <p><strong>Description:</strong></p>
 
-      <p>{{ movie.description }} </p>
+     <div>
+      <p class="description-text">{{ movie.description }} </p>
+     </div>
 
     <div class="avatars">
       <a *ngFor="let actor of actors" href="#" data-toggle="tooltip" title="{{ actor.actorName }}" data-placement="top">
@@ -65,6 +68,7 @@
     </div> <!-- end avatars -->
     
     
+    <div class="mt-4"></div>
 
 
     </div> <!-- end column2 -->

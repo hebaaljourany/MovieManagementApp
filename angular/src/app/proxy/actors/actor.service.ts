@@ -56,7 +56,6 @@ export class ActorService {
     this.restService.request<any, ActorDto>({
       method: 'PUT',
       url: `/api/app/actor/${id}`,
-      body: input,
     },
     { apiName: this.apiName });
 

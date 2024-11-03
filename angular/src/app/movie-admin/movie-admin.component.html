@@ -1,32 +1,101 @@
-
-<div class="card">
-    <div class="card-header">
-      <div class="row">
-        <div class="col col-md-6">
-         
-        </div>        
-        <div class="text-end col col-md-6">
-            
-          <!-- Add the "new city" button here -->
-          <div class="add-movie-btn-container">
-            <button id="create" class="btn btn-primary" type="button" (click)="navigateToAddMovie()">
-              
-              <i class="fa fa-plus mr-1"></i>
-              <span>{{ "::AddNewMovie" | abpLocalization }}</span>
-            </button>
+    <div class="container mt-4">
+      <h1 class="page-title text-center mb-4">Movie Management</h1>
+    
+    <div class="card">
+      <div class="card-header space" *ngIf="!isLoading">
+        <div class="add-movie-btn-container mb-3 text-end">
+          <button id="create" class="btn btn-primary" type="button" (click)="navigateToAddMovie()">
+            <i class="fa fa-plus mr-1"></i>
+            <span>{{ "::AddNewMovie" | abpLocalization }}</span>
+          </button>
+        </div>
+        <!-- السطر الأول: مربع بحث كامل العرض للبحث عن الأفلام -->
+        <div class="form-group position-relative mb-3">
+          <input
+            id="movieSearch"
+            type="text"
+            [(ngModel)]="movieSearchTerm"
+            placeholder="Search for movies by name..."
+            class="form-control full-width-search"
+          />
+          <i class="fa fa-search search-icon" (click)="searchMoviesByName(movieSearchTerm)"></i> <!-- تمرير قيمة البحث -->
+        </div>
+        <div class="row align-items-center mt-3">
+          <!-- مربع البحث عن الممثلين -->
+          <div class="col-lg-4 col-md-6 mb-2">
+            <div class="form-group position-relative">
+              <input
+                id="actorSearch"
+                type="text"
+                [(ngModel)]="actorSearchTerm"
+                (input)="searchActors()"
+                placeholder="Filter by Actor..."
+                class="form-control search-input"
+                (focus)="isDropdownActorsOpen = true"
+              />
+              <ul *ngIf="filteredActors.length > 0 && isDropdownActorsOpen" class="dropdown-menu show">
+                <li
+                  *ngFor="let actor of filteredActors"
+                  (click)="selectActor(actor)"
+                  (mouseenter)="hoveredActor = actor"
+                  (mouseleave)="hoveredActor = null"
+                  [class.active]="hoveredActor === actor"
+                >
+                  {{ actor.actorName }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        
+          <!-- مربع البحث عن التصنيفات -->
+          <div class="col-lg-4 col-md-6 mb-2">
+            <div class="form-group position-relative">
+              <input
+                id="categorySearch"
+                type="text"
+                [(ngModel)]="categorySearchTerm"
+                (input)="searchCategories()"
+                placeholder="Filter by Category..."
+                class="form-control search-input"
+                (focus)="isDropdownOpen = true"
+              />
+              <ul *ngIf="filteredCategories.length > 0 && isDropdownOpen" class="dropdown-menu show">
+                <li
+                  *ngFor="let category of filteredCategories"
+                  (click)="selectCategory(category)"
+                  (mouseenter)="hoveredCategory = category"
+                  (mouseleave)="hoveredCategory = null"
+                  [class.active]="hoveredCategory === category"
+                >
+                  {{ category.categoryName }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        
+          <!-- أزرار الفلترة وتصفية النتائج -->
+          <div class="col-lg-4 col-md-6 mb-2">
+            <button (click)="applyFilters()" class="btn btn-primary filter-btn me-2">Filter Movies</button>
+            <button (click)="clearFilters()" class="btn btn-outline-secondary filter-btn">Clear Filter</button>
           </div>
         </div>
+        
+        
+    
       </div>
     </div>
-          <!-- Loading indicator -->
+    <div class="card">
+
+
+          <div class="card-body">
+                      <!-- Loading indicator -->
           <div *ngIf="isLoading" class="loading-spinner">
             <div class="spinner-border text-primary" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
           </div>
-          <div *ngIf="!isLoading">
             <div class="card-body" *ngIf="!isLoading">
-              <ngx-datatable  [rows]="movie.items" [count]="movie.totalCount" [list]="list" default (activate)="onRowActivate($event)">
+              <ngx-datatable  [rows]="movie.items" [count]="movie.totalCount" [list]="list" default >
                 <ngx-datatable-column [name]="'::Actions' | abpLocalization"
                  [maxWidth]="150"
                  >
@@ -47,6 +116,9 @@
                         <button ngbDropdownItem (click)="delete(row.id)">
                           {{ '::Delete' | abpLocalization }}
                         </button>
+                        <button ngbDropdownItem (click)="viewDetails(row.id)">
+                          {{ '::viewDetails' | abpLocalization }}
+                        </button>
                       </div>
                     </div>
                   </ng-template>
@@ -61,20 +133,11 @@
               </ngx-datatable>
           
             </div>
-  
-
-             
-          </div>
-          
-  
-          
-  
           <!-- No movies message -->
           <div *ngIf="!isLoading && movie.totalCount === 0" class="no-movies-message">
             No movies available. Please add a new movie.
           </div>
         <!--</ngx-datatable>-->
-      
+      </div>
     </div>
-    
-  
+  </div>

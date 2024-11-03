@@ -86,6 +86,15 @@ export class MovieService {
     { apiName: this.apiName });
   
 
+  getMyList = (input: GetMovieInputDto) =>
+    this.restService.request<any, PagedResultDto<MovieDto>>({
+      method: 'GET',
+      url: '/api/app/movie/my-list',
+      params: { filter: input.filter, actorId: input.actorId, categoryId: input.categoryId, sorting: input.sorting, skipCount: input.skipCount, maxResultCount: input.maxResultCount },
+    },
+    { apiName: this.apiName });
+  
+
   getTotalDownloads = (movieId: string, from?: string, to?: string) =>
     this.restService.request<any, number>({
       method: 'GET',
@@ -133,6 +142,14 @@ export class MovieService {
       method: 'POST',
       url: `/api/app/movie/rate-movie/${movieId}`,
       params: { ratingValue },
+    },
+    { apiName: this.apiName });
+  
+
+  removeMovieFromUserList = (movieId: string) =>
+    this.restService.request<any, void>({
+      method: 'DELETE',
+      url: `/api/app/movie/movie-from-user-list/${movieId}`,
     },
     { apiName: this.apiName });
   

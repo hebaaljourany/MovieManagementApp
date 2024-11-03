@@ -1,18 +1,72 @@
-<div class="movie-details" *ngIf="movie">
-    <h2>{{ movie.title }}</h2>
-    <p><strong>Release Date:</strong> {{ formatDate(movie.releaseDate) }}</p>
-    <p><strong>Description:</strong> {{ movie.description }}</p>
-    <p><strong>Duration:</strong> {{ movie.duration }} minutes</p>
-    <p><strong>Age Rating:</strong> {{ movie.ageRating }}</p>
-  
-    <!-- Poster Image -->
-    <div class="poster-container">
-      <img [src]="movie.posterBlob" alt="Movie Poster" class="poster-image" />
-    </div>
-  
-    <!-- Cover Image -->
-    <div class="cover-container">
-      <img [src]="movie.coverBlob" alt="Movie Cover" class="cover-image" />
+<div class="container mt-4">
+  <h1 class="page-title text-center mb-4">Movie Details</h1>
+<div class="card">
+<div class="card-body">
+<div class="movie-form">
+
+  <div class="form-group">
+    <label>Title</label>
+    <input type="text" [value]="movieDetails.title" disabled>
+  </div>
+
+  <div class="form-group">
+    <label>Duration</label>
+    <input type="text" [value]="movieDetails.duration" disabled>
+  </div>
+
+
+
+  <div class="form-group">
+    <label>Age Rating</label>
+    <input type="text" [value]="movieDetails.ageRating" disabled>
+  </div>
+
+  <div class="form-group">
+    <label>Release Date</label>
+    <input type="text" [value]="movieDetails.releaseDate" disabled>
+  </div>
+
+  <div class="form-group">
+    <label>Categories</label>
+    <ul class="show" >
+      <li *ngFor="let category of movieDetails.categories">
+        {{ category.categoryName }}
+      </li>
+    </ul>
+  </div>
+  <div class="form-group">
+    <label>Actors</label>
+    <ul class="show" >
+      <li *ngFor="let actor of movieDetails.actors">
+        {{ actor.actorName }}
+      </li>
+    </ul>
+  </div>
+
+  <div class="form-group">
+    <label>Description</label>
+    <textarea [value]="movieDetails.description" disabled></textarea>
+  </div>
+
+
+
+  <div class="form-group image-display">
+    <label>Cover</label>
+    <div class="image-container">
+      <img [src]="movieDetails.coverBlob" alt="Cover" class="thumbnail">
     </div>
   </div>
-  
+
+  <div class="form-group image-display">
+    <label>Poster</label>
+    <div class="image-container">
+      <img [src]="movieDetails.posterBlob" alt="Poster" class="thumbnail">
+    </div>
+  </div>
+ 
+
+  <button class="btn btn-primary" (click)="backToMovies()">Back</button>
+</div>
+</div>
+</div>
+</div>

@@ -108,10 +108,10 @@ a:hover {
     margin-bottom: 13px;
     position: relative;
     text-shadow: 
-    -1px -1px 0 #000, /* الحافة السوداء */
-    1px -1px 0 #000, 
-    -1px 1px 0 #000, 
-    1px 1px 0 #000,
+    -1px -1px 3px #C4AF3D, /* الحافة السوداء */
+    1px -1px 3px #C4AF3D, 
+    -1px 1px 3px #C4AF3D, 
+    1px 1px 3px #C4AF3D,
     0px 0px 6px white;
     
     span {
@@ -120,7 +120,7 @@ a:hover {
       margin-left: 12px;
       background: #C4AF3D;
       border-radius: 5px;
-      color: #544C21;
+      color: #ffffff;
       font-size: 14px;
       padding: 0px 4px;
       text-shadow:none,
@@ -159,7 +159,13 @@ a:hover {
   font-size: 16px;
   line-height: 26px;
   color: #B1B0AC;
+  margin: bottom 20px;;
   
+}
+.description-text {
+  text-align: justify; // Justify text
+  margin-top: 0.5rem;
+  line-height: 1.6; // Increase line height for better readability
 }
 
 .column1 {
@@ -168,20 +174,27 @@ a:hover {
   width: 220px;
   float: left;
   text-align: center;
+  
 }
 
 .tag {
-  background: white;
   border-radius: 10px;
   padding: 3px 8px;
   font-size: 14px;
+  font-weight: bold;
+
   margin-right: 4px;
   line-height: 35px;
   cursor: pointer;
-}
+  background:  #ffffff;
+  color: #C4AF3D;
+  border-color: #C4AF3D;
+  }
 
 .tag:hover {
   background: #ddd;
+  
+
 }
 
 .column2 {
@@ -190,20 +203,38 @@ a:hover {
   margin-left: 20px;
   width: 480px;
   float: left;
+  
+}
+.column2 p {
+  margin: 0.5rem 0; /* Spacing between paragraphs */
+  color: #444343; /* General text color */
+  font-size: 1rem; /* Base font size */
+  line-height: 1.6; /* Improve readability with line height */
+  
 }
 
+.column2 strong {
+  font-size: 1rem; /* Base font size */
+
+  font-weight: bold;
+  color: #c4b03d; /* لون أزرق جذاب */
+  text-shadow: 2px 5px 5px rgba(114, 113, 113, 0.3); /* إضافة ظل للنص */
+  font-family: 'Arial', sans-serif; /* تغيير الخط */
+  
+}
 .avatars {
   margin-top: 23px;
   
   
   img {
     cursor: pointer;
-    clip-path: circle();  }
-  
+    clip-path: circle(); 
+    border-color: #C4AF3D;
+  }
   img:hover {
     opacity: 0.6;
   }
-  
+
   a:hover {
     text-decoration: none;
   }
@@ -305,51 +336,4 @@ a[data-tooltip][data-placement="top"]::after {
   left: 20px;
   margin-bottom: 4px;
 }
-.edit-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(0, 0, 0, 0.7); /* لون خلفية الزر */
-  color: white; /* لون أيقونة التعديل */
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  font-size: 18px;
-}
 
-.edit-btn:hover {
-  background-color: rgba(0, 0, 0, 0.9); /* تغيير لون الخلفية عند التمرير */
-}
-
-.edit-btn i {
-  pointer-events: none; /* التأكد من أن الأيقونة نفسها لا تستقبل الأحداث */
-}
-
-.delete-btn {
-  position: absolute;
-  top: 10px;
-  right: 60px; /* اضبط المسافة لتكون على يمين زر التعديل */
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.delete-btn:hover {
-  background-color: rgba(255, 0, 0, 0.9); /* تغيير لون الخلفية عند التمرير */
-}
-.edit-btn:hover {
-  background-color: rgba(27, 184, 53, 0.9); /* تغيير لون الخلفية عند التمرير */
-}

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input,OnInit, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { MovieDto } from '@proxy/movies';
 import { MovieService } from '@proxy/movies';
@@ -17,6 +17,7 @@ export class CardComponent implements OnInit {
   posterBlob : string;
   categories: CategoryDto[]; // List of categories for the movie
   averageRating: number; // Average rating of the movie
+  @Output() movieRemoved: EventEmitter<MovieDto> = new EventEmitter();
 
 
   constructor(private router: Router, private movieService: MovieService) {}
@@ -78,8 +79,20 @@ export class CardComponent implements OnInit {
       this.movieService.addToMyList(this.movie.id).subscribe(() => {
         this.checkIfInList(); // إعادة التحقق من حالة الفيلم بعد الإضافة
       }, error => {
-        console.error('Error adding movie to list:', error);
+        console.error('Error adding movie to your list:', error);
       });
     }
   }
+  removeFromMyList(event: Event): void {
+    event.stopPropagation();
+
+    if (this.isInList) {
+        this.movieService.removeMovieFromUserList(this.movie.id).subscribe(() => {
+            this.movieRemoved.emit(this.movie); // Emit the event to notify parent
+            this.checkIfInList(); // Recheck if movie is in list
+        }, error => {
+            console.error('Error removing movie from your list:', error);
+        });
+    }
+}
 }

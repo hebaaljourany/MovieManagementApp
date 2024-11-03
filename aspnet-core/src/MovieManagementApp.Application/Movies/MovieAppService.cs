@@ -272,6 +272,69 @@ namespace MovieManagementApp.Movies
             return new PagedResultDto<MovieDto>(totalCount, movieDtos);
         }
 
+        public async Task<PagedResultDto<MovieDto>> GetMyListAsync(GetMovieInputDto input)
+        {
+            var myAccountId = await GetMyAccountIdAsync();
+            // 1. Get the base query for movies associated with the user's list
+            var myListQuery = from movie in await Repository.GetQueryableAsync()
+                              join myList in await _myListRepository.GetQueryableAsync() on movie.Id equals myList.MovieId
+                              where myList.MyAccountId == myAccountId
+                              select movie;
+
+            // 2. Apply sorting and pagination to the user's list query
+            var moviesQuery = myListQuery
+                //.OrderBy(input.Sorting ?? nameof(Movie.Title)) // Apply sorting based on input
+                .Skip(input.SkipCount)
+                .Take(input.MaxResultCount);
+
+
+            // 3. Fetch the list of movies
+            var movies = await AsyncExecuter.ToListAsync(moviesQuery);
+
+            // 4. Convert movies to MovieDto and populate each with related Actors and Categories
+            var movieDtos = new List<MovieDto>();
+
+            foreach (var movie in movies)
+            {
+                // Map the movie to DTO
+                var movieDto = ObjectMapper.Map<Movie, MovieDto>(movie);
+
+                // Get actors associated with the movie
+                var movieActorsQuery = from movieActor in await _movieActorRepository.GetQueryableAsync()
+                                       join actor in await _actorRepository.GetQueryableAsync() on movieActor.ActorId equals actor.Id
+                                       where movieActor.MovieId == movie.Id
+                                       select new ActorDto
+                                       {
+                                           Id = actor.Id,
+                                           ActorName = actor.ActorName
+                                       };
+                movieDto.Actors = await AsyncExecuter.ToListAsync(movieActorsQuery);
+
+
+                // Get categories associated with the movie
+                var movieCategoriesQuery = from movieCategory in await _movieCategoryRepository.GetQueryableAsync()
+                                           join category in await _categoryRepository.GetQueryableAsync() on movieCategory.CategoryId equals category.Id
+                                           where movieCategory.MovieId == movie.Id
+                                           select new CategoryDto
+                                           {
+                                               Id = category.Id,
+                                               CategoryName = category.CategoryName
+                                           };
+                movieDto.Categories = await AsyncExecuter.ToListAsync(movieCategoriesQuery);
+                var posterBlob = await _blobContainer.GetAllBytesAsync(movie.PosterBlob);
+                movieDto.PosterBlob = Convert.ToBase64String(posterBlob);
+                var coverBlob = await _blobContainer.GetAllBytesAsync(movie.CoverBlob);
+                movieDto.CoverBlob = Convert.ToBase64String(coverBlob);
+                // Add the completed movie DTO to the list
+                movieDtos.Add(movieDto);
+            }
+
+            // 5. Count the total number of movies for paging
+            var totalCount = await AsyncExecuter.CountAsync(myListQuery);
+
+            // 6. Return the paginated result
+            return new PagedResultDto<MovieDto>(totalCount, movieDtos);
+        }
 
         // Create Movie - with default values for certain properties
         public override async Task<MovieDto> CreateAsync([FromForm] CreateUpdateMovieDto input)
@@ -424,10 +487,60 @@ namespace MovieManagementApp.Movies
             return ObjectMapper.Map<Movie, MovieDto>(updatedMovie);
         }
 
-        
-        
+
+
         // Delete Movie
         public override async Task DeleteAsync(Guid id)
+        {
+            // Check if the movie exists
+            var movie = await Repository.GetAsync(id);
+            if (movie == null)
+            {
+                throw new EntityNotFoundException(typeof(Movie), id);
+            }
+
+            // Delete relationships with categories
+            var movieCategories = await _movieCategoryRepository.GetListAsync(m => m.MovieId == id);
+            foreach (var movieCategory in movieCategories)
+            {
+                await _movieCategoryRepository.DeleteAsync(movieCategory);
+            }
+
+            // Delete relationships with actors
+            var movieActors = await _movieActorRepository.GetListAsync(m => m.MovieId == id);
+            foreach (var movieActor in movieActors)
+            {
+                await _movieActorRepository.DeleteAsync(movieActor);
+            }
+
+            // Delete ratings associated with the movie
+            var ratings = await _ratingRepository.GetListAsync(r => r.MovieId == id);
+            foreach (var rating in ratings)
+            {
+                await _ratingRepository.DeleteAsync(rating);
+            }
+
+            // Delete user interactions for this movie
+            var userMovieInteractions = await _userMovieInteractionRepository.GetListAsync(umi => umi.MovieId == id);
+            foreach (var interaction in userMovieInteractions)
+            {
+                await _userMovieInteractionRepository.DeleteAsync(interaction);
+            }
+
+            // Delete all entries in MyList for this movie across all users
+            var myListEntries = await _myListRepository.GetListAsync(m => m.MovieId == id);
+            foreach (var entry in myListEntries)
+            {
+                await _myListRepository.DeleteAsync(entry);
+            }
+
+            // Finally, delete the movie itself
+            await Repository.DeleteAsync(movie);
+
+            _logger.LogInformation($"Movie with ID {id} has been deleted successfully.");
+        }
+
+        /*public override async Task DeleteAsync(Guid id)
         {
             // تحقق من وجود الفيلم
             var movie = await Repository.GetAsync(id);
@@ -468,8 +581,22 @@ namespace MovieManagementApp.Movies
             await Repository.DeleteAsync(movie);
 
             _logger.LogInformation($"Movie with ID {id} has been deleted successfully.");
-        }
+        }*/
+        public async Task RemoveMovieFromUserListAsync(Guid movieId)
+        {
+            var myAccountId = await GetMyAccountIdAsync();
 
+            // Check if the movie is in the user's list
+            var myListEntry = await _myListRepository.FirstOrDefaultAsync(m => m.MovieId == movieId && m.MyAccountId == myAccountId);
+            if (myListEntry != null)
+            {
+                await _myListRepository.DeleteAsync(myListEntry);
+            }
+            else
+            {
+                throw new Exception("This movie is not in your list.");
+            }
+        }
 
         // Rate a movie
         public async Task RateMovieAsync(Guid movieId, int ratingValue)

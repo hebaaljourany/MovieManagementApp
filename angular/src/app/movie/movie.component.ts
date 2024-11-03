@@ -81,10 +81,7 @@ export class MovieComponent implements OnInit {
     });
   }
 
-  // Method to navigate to the 'Add Movie' component
-  navigateToAddMovie(): void {
-    this.router.navigate(['/movies/add-movie']);
-  }
+
   searchCategories(): void {
     if (this.categorySearchTerm.length > 2) {
       this.movieService

@@ -1,3 +1,4 @@
+
 <div class="movie-card"
 (click)="goToMovieDetails()"
 (mouseenter)="onMouseEnter()"
@@ -25,9 +26,10 @@
       </div>
       <p class="release-date">{{ movie.releaseDate | date: 'MMMM d, y' }}</p>
     </div>
-      <button class="add-btn" (click)="toggleMovieInList($event)">
-        <i class="fa" [ngClass]="isInList ? 'fa-check' : 'fa-plus'"></i>
-      </button>
+    <button class="add-btn" (click)="isInList ? removeFromMyList($event) : toggleMovieInList($event)" 
+        [title]="isInList ? 'Remove from my list' : 'Add to my list'">
+  <i class="fa" [ngClass]="isInList ? 'fa-times' : 'fa-plus'"></i>
+</button>
     
   </div>
 </div>

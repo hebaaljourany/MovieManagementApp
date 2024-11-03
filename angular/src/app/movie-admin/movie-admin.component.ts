@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { MovieService } from '@proxy/movies'; // Movie Service to fetch movies
+import { GetMovieInputDto, MovieService } from '@proxy/movies';
 import { MovieDto } from '@proxy/movies'; // Movie Data Transfer Object (DTO)
 import { Router } from '@angular/router';
 import { ListService, PagedResultDto,  } from '@abp/ng.core'; // ABP services for pagination and list handling
+import { CategoryLookupDto } from '@proxy/movies';
+import { ActorLookupDto } from '@proxy/movies';
+import { debounceTime, map, switchMap, distinctUntilChanged } from 'rxjs/operators';
 
 
 @Component({
@@ -16,6 +19,19 @@ import { ListService, PagedResultDto,  } from '@abp/ng.core'; // ABP services fo
 export class MovieAdminComponent implements OnInit {
   movie = { items: [], totalCount: 0 } as PagedResultDto<MovieDto>; // Holds the list of movies and total count
   isLoading = true; // Loading state
+  getMovieInput = {} as GetMovieInputDto;
+  filteredCategories: CategoryLookupDto[] = [];
+  selectedCategory: string = '';
+  categorySearchTerm: string = ''; // مصطلح البحث الخاص بالتصنيفات
+  isDropdownOpen = false;
+  hoveredCategory: CategoryLookupDto | null = null;
+  filteredActors: ActorLookupDto[] = [];
+  selectedActor: string = '';
+  actorSearchTerm: string = ''; // مصطلح البحث الخاص بالتصنيفات
+  isDropdownActorsOpen = false;
+  hoveredActor: ActorLookupDto | null = null;
+  movieSearchTerm: string = '';
+
 
   constructor(
     private movieService: MovieService, // Injecting Movie Service
@@ -25,9 +41,7 @@ export class MovieAdminComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-
-    const movieStreamCreator = (query) => this.movieService.getList(query);
-
+    const movieStreamCreator = (query) => this.movieService.getList(this.getMovieInput);
     // Hooking the stream to ListService for fetching and updating movie data
     this.list.hookToQuery(movieStreamCreator).subscribe((response) => {
       console.log(response);
@@ -37,6 +51,83 @@ export class MovieAdminComponent implements OnInit {
 
   }
   
+  searchCategories(): void {
+    if (this.categorySearchTerm.length > 2) {
+      this.movieService
+        .getCategoryLookup(this.categorySearchTerm)
+        .pipe(
+          debounceTime(300),
+          distinctUntilChanged(),
+          map((result) => result.items.slice(0, 10))
+        )
+        .subscribe((categories) => {
+          this.filteredCategories = categories;
+        });
+    } else {
+      this.filteredCategories = [];
+    }
+  }
+
+  searchActors(): void {
+    if (this.actorSearchTerm.length > 2) {
+      this.movieService
+        .getActorLookup(this.actorSearchTerm)
+        .pipe(
+          debounceTime(300),
+          distinctUntilChanged(),
+          map((result) => result.items.slice(0, 10))
+        )
+        .subscribe((actors) => {
+          this.filteredActors = actors;
+        });
+    } else {
+      this.filteredActors = [];
+    }
+  }
+
+
+  // تحديد الممثل فقط دون فلترة
+selectActor(actor: ActorLookupDto): void {
+  this.actorSearchTerm = actor.actorName;
+  this.getMovieInput.actorId = actor.id;
+  this.filteredActors = [];
+  this.isDropdownActorsOpen = false; // إغلاق القائمة بعد الاختيار
+}
+
+// تحديد التصنيف فقط دون فلترة
+selectCategory(category: CategoryLookupDto): void {
+  this.categorySearchTerm = category.categoryName;
+  this.getMovieInput.categoryId = category.id;
+  this.filteredCategories = [];
+  this.isDropdownOpen = false; // إغلاق القائمة بعد الاختيار
+}
+
+// دالة لتطبيق الفلترة بناءً على الاختيارات
+applyFilters(): void {
+  this.isLoading = true;
+  this.movieSearchTerm = '';
+
+  this.list.get(); // استدعاء القائمة لتنفيذ الفلترة
+}
+
+clearFilters(): void {
+  this.actorSearchTerm = '';
+  this.categorySearchTerm = '';
+  this.getMovieInput.actorId = undefined;
+  this.getMovieInput.categoryId = undefined;
+  this.filteredActors = [];
+  this.filteredCategories = [];
+  this.isDropdownActorsOpen = false;
+  this.isDropdownOpen = false;
+  this.isLoading = true;
+  this.list.get();
+}
+
+searchMoviesByName(actorName: string):void{
+  this.getMovieInput.filter = actorName;
+  this.clearFilters();
+}
+
   // Method to navigate to the 'Add Movie' component
   navigateToAddMovie(): void {
     this.router.navigate(['/movie-admin/movie-form']);
