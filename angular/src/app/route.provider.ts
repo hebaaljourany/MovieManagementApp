@@ -10,15 +10,15 @@ function configureRoutes(routesService: RoutesService) {
     routesService.add([
       {
         path: '/',
-        name: '::Menu:Home',
+        name: 'Home',
         iconClass: 'fas fa-home',
         order: 1,
         layout: eLayoutType.application,
       },
       {
         path: '/movies',
-        name: '::Menu:Movies',
-        iconClass: 'fas fa-watch',
+        name: 'Movies',
+        iconClass: 'fas fa-film',  // Movie icon (for films)
         order: 2,
         layout: eLayoutType.application,
         requiredPolicy : "MovieManagementApp.MyLists"
@@ -26,8 +26,8 @@ function configureRoutes(routesService: RoutesService) {
       },
       {
         path: '/movies/my-list',
-        name: '::Menu:MyList',
-        iconClass: 'fas fa-list',
+        name: 'MyList',
+        iconClass: 'fas fa-list',  // List icon
         order: 3,
         layout: eLayoutType.application,
         requiredPolicy : "MovieManagementApp.MyLists"
@@ -35,8 +35,8 @@ function configureRoutes(routesService: RoutesService) {
       },
       {
         path: '/movie-admin',
-        name: '::Menu:MoviesList',
-        iconClass: 'fas fa-category',
+        name: 'Movie Management',
+        iconClass: 'fas fa-film',  // Clapperboard icon for movie management
         order: 4,
         layout: eLayoutType.application,
         requiredPolicy : "MovieManagementApp.Movies.Create"
@@ -44,8 +44,8 @@ function configureRoutes(routesService: RoutesService) {
       },
       {
         path: '/movie-admin/actor-form',
-        name: '::Menu:Actors',
-        iconClass: 'fas fa-actor',
+        name: ' Actor Management',
+        iconClass: 'fas fa-user',  // Actor icon
         order: 6,
         layout: eLayoutType.application,
         requiredPolicy : "MovieManagementApp.Actors"
@@ -53,8 +53,8 @@ function configureRoutes(routesService: RoutesService) {
       },
       {
         path: '/movie-admin/category-form',
-        name: '::Menu:Categories',
-        iconClass: 'fas fa-category',
+        name: ' Category Management',
+        iconClass: 'fas fa-tags',  // Tag icon for categories
         order: 7,
         layout: eLayoutType.application,
         requiredPolicy : "MovieManagementApp.Categories"

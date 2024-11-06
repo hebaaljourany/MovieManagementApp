@@ -1,7 +1,7 @@
 <div class="container mt-4">
   <h1 class="page-title text-center mb-4">{{ movieId ? 'Edit Movie' : 'Create New Movie' }}</h1>
 
-<div class="card">
+<div class="card" *abpPermission="'MovieManagementApp.Movies.Create'">
 <div class="card-body">
 <div class="add-movie-container">
 

@@ -248,7 +248,6 @@ export class MovieFormComponent implements OnInit {
       // إذا كان إنشاء فيلم جديد
       this.fileUploadService.createMovie(form_data).subscribe(
         (response) => {
-          
         },
         (error) => {
           console.error('An error occurred while creating the movie:', error);

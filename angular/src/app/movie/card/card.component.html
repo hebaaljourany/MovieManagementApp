@@ -27,7 +27,8 @@
       <p class="release-date">{{ movie.releaseDate | date: 'MMMM d, y' }}</p>
     </div>
     <button class="add-btn" (click)="isInList ? removeFromMyList($event) : toggleMovieInList($event)" 
-        [title]="isInList ? 'Remove from my list' : 'Add to my list'">
+        [title]="isInList ? 'Remove from my list' : 'Add to my list'"
+        *abpPermission="'MovieManagementApp.MyLists.Create'">
   <i class="fa" [ngClass]="isInList ? 'fa-times' : 'fa-plus'"></i>
 </button>
     

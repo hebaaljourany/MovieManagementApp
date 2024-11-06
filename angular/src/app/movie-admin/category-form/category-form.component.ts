@@ -55,9 +55,10 @@ export class CategoryFormComponent implements OnInit {
     });
   }
   delete(id: string) {
-    this.confirmation.warn('::AreYouSureToDeleteThisCategory', '::AreYouSure').subscribe((status) => {
+    this.confirmation.warn('Are You Sure To Delete This Category', 'Are You Sure').subscribe((status) => {
       if (status === Confirmation.Status.confirm) {
         this.categoryService.delete(id).subscribe(() => this.list.get());
+
       }
     });
   }
@@ -65,7 +66,7 @@ export class CategoryFormComponent implements OnInit {
   buildForm() {
     this.form = this.fb.group({
       CategoryName: [this.selectedCategory.categoryName||'', Validators.required],
-      
+
     });
   }
   save() {

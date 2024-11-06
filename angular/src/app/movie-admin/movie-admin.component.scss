@@ -1,11 +1,4 @@
-.page-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #c4b03d; /* لون أزرق جذاب */
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* إضافة ظل للنص */
-    font-family: 'Arial', sans-serif; /* تغيير الخط */
-    
-  }
+
 
   .full-width-search {
     width: 100%;
@@ -20,7 +13,10 @@
     transform: translateY(-50%);
     color: #c4b03d;
     font-size: 1.2em;
+    cursor: pointer;
+
   }
+
   .search-input {
     font-size: 14px; /* محاذاة حجم النص مع الأزرار */
     padding: 0.5rem 0.75rem;
@@ -31,7 +27,7 @@
   
   .card .card-header .btn {
     font-size: 1em;
-    font-weight: bold;
+    font-weight: 400;
     background: #c4b03d;
     color: #ffffff;
     margin: 0;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MovieManagementApp.Application.Contracts.Actors;
 using MovieManagementApp.Application.Contracts.Movies;
 using MovieManagementApp.Blob;
@@ -13,12 +14,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.BlobStoring;
 using Volo.Abp.Content;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+
 using static MovieManagementApp.Permissions.MovieManagementAppPermissions;
 
 namespace MovieManagementApp.Actors
@@ -34,12 +37,15 @@ namespace MovieManagementApp.Actors
     {
         private readonly IActorRepository _actorRepository;
         private readonly IBlobContainer<MovieContainer> _blobContainer;
+        private readonly IRepository<MovieActor, Guid> _movieActorRepository;
 
 
         public ActorAppService(
             IRepository<Actor, Guid> repository,
             IActorRepository actorRepository,
-            IBlobContainer<MovieContainer> blobContainer
+            IBlobContainer<MovieContainer> blobContainer,
+            IRepository<MovieActor, Guid> movieActorRepository
+
 
             )
             : base(repository)
@@ -51,6 +57,9 @@ namespace MovieManagementApp.Actors
             UpdatePolicyName = MovieManagementAppPermissions.Actors.Edit;
             DeletePolicyName = MovieManagementAppPermissions.Actors.Delete;
             _blobContainer = blobContainer;
+            _movieActorRepository = movieActorRepository;
+
+
 
 
         }
@@ -79,22 +88,34 @@ namespace MovieManagementApp.Actors
         }
         public override async Task<ActorDto> CreateAsync([FromForm] CreateUpdateActorDto input)
         {
+            var existingActor = await Repository
+                .FirstOrDefaultAsync(a => EF.Functions.Like(a.ActorName.ToLower(), input.ActorName.ToLower()));
 
-            var actor = ObjectMapper.Map<CreateUpdateActorDto, Actor>(input);
+            if (existingActor != null)
+            {
 
-
-            var ActorImageBlobName = await UploadFileAsync(input.ActorImageBlob, 273, 184);
-
-
-            actor.ActorImageBlob = ActorImageBlobName;
-            var bytes = await input.ActorImageBlob.GetStream().GetAllBytesAsync();
-            var base64 = Convert.ToBase64String(bytes);
-            actor.Thumbnail = ThumbnailGenerator.CreateThumbnailFromBase64(base64, 75, 75);
-
-            actor = await Repository.InsertAsync(actor, true);
+                throw new UserFriendlyException("An actor with this name already exists. Please choose a different name.");
+            }
+            else
+            {
+                var actor = ObjectMapper.Map<CreateUpdateActorDto, Actor>(input);
 
 
-            return ObjectMapper.Map<Actor, ActorDto>(actor);
+                var ActorImageBlobName = await UploadFileAsync(input.ActorImageBlob, 273, 184);
+
+
+                actor.ActorImageBlob = ActorImageBlobName;
+                var bytes = await input.ActorImageBlob.GetStream().GetAllBytesAsync();
+                var base64 = Convert.ToBase64String(bytes);
+                actor.Thumbnail = ThumbnailGenerator.CreateThumbnailFromBase64(base64, 75, 75);
+
+                actor = await Repository.InsertAsync(actor, true);
+
+
+                return ObjectMapper.Map<Actor, ActorDto>(actor);
+
+            }
+
         }
         public override async Task<ActorDto> UpdateAsync(Guid id, [FromForm] CreateUpdateActorDto input)
         {
@@ -102,7 +123,14 @@ namespace MovieManagementApp.Actors
             {
                 throw new ArgumentNullException(nameof(input), "Input cannot be null.");
             }
+
             var actor = await Repository.GetAsync(id);
+            // تحقق من وجود ممثل آخر بنفس الاسم
+            var existingActor = await Repository.FirstOrDefaultAsync(a => a.ActorName.Equals(input.ActorName, StringComparison.OrdinalIgnoreCase) && a.Id != id);
+            if (existingActor != null)
+            {
+                throw new UserFriendlyException("An actor with this name already exists. Please choose a different name.");
+            }
             actor.ActorName = input.ActorName;
             string actorBlobName;
 
@@ -149,5 +177,17 @@ namespace MovieManagementApp.Actors
             return await _blobContainer.GetAllBytesOrNullAsync("my-blob-1");
         }
 
+        public override async Task DeleteAsync(Guid id)
+        {
+            var isActorLinked = await _movieActorRepository
+                .AnyAsync(mc => mc.ActorId == id);
+
+            if (isActorLinked)
+            {
+                throw new UserFriendlyException("Cannot delete this actor. Please remove the associated movies first.");
+            }
+
+            await base.DeleteAsync(id);
+        }
     }
 }

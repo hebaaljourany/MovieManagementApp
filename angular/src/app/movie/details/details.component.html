@@ -6,7 +6,7 @@
     <div class="hero" [ngStyle]="{'background-image': 'url(' + coverBlob + ')'}">
 
 
-    <div class="details">
+    <div class="details " *abpPermission="'MovieManagementApp.Ratings'">
 
       <div class="title1">{{ movie.title }} <span >{{ movie.ageRating }}</span></div>
       <div class="rating"*abpPermission="'MovieManagementApp.Ratings.Create'">
@@ -73,7 +73,7 @@
 
     </div> <!-- end column2 -->
     </div> <!-- end description -->
-    <div class="watch-movie">
+    <div class="watch-movie" *abpPermission="'MovieManagementApp.Ratings'">
       <video controls class="movie-video">
         <source *ngIf="videoUrl" [src]="videoUrl" type="video/mp4">
         Your browser does not support the video tag.

@@ -64,9 +64,11 @@ export class ActorFormComponent implements OnInit {
   }
 
   delete(id: string) {
-    this.confirmation.warn('::AreYouSureToDeleteThisActor', '::AreYouSure').subscribe((status) => {
+    this.confirmation.warn('Are You Sure To Delete This Actor', 'Are You Sure').subscribe((status) => {
       if (status === Confirmation.Status.confirm) {
         this.actorService.delete(id).subscribe(() => this.list.get());
+
+      
       }
     });
   }

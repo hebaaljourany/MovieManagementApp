@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -29,6 +30,7 @@ using Volo.Abp.Content;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Users;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MovieManagementApp.Movies
 {
@@ -128,14 +130,6 @@ namespace MovieManagementApp.Movies
                 return new RemoteStreamContent(movieStream, blobName, "video/mp4");
             }
         }
-        //[HttpGet("stream-video")]
-
-        //public async Task<IRemoteStreamContent> StreamVideo()
-        //{
-        //    var relativePath = "gg.mp4";
-        //    var webRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-        //    var fullPath = Path.Combine(webRootPath, relativePath);
-
         private async Task<Guid> GetMyAccountIdAsync()
         {
             if (!_currentUser.IsAuthenticated)
@@ -219,11 +213,14 @@ namespace MovieManagementApp.Movies
             var moviesQuery = queryable
                 .WhereIf(!input.Filter.IsNullOrEmpty(), m => m.Title.Contains(input.Filter))
                 .WhereIf(input.ActorId.HasValue, m => m.MovieActors.Any(ma => ma.ActorId == input.ActorId.Value))
-                .WhereIf(input.CategoryId.HasValue, m => m.MovieCategories.Any(mc => mc.CategoryId == input.CategoryId.Value))
-                // .OrderBy(input.Sorting ?? nameof(Movie.Title))
+                .WhereIf(input.CategoryId.HasValue, m => m.MovieCategories.Any(mc => mc.CategoryId == input.CategoryId.Value));
+
+
+            //Paging
+            moviesQuery = moviesQuery
+                .OrderBy(NormalizeSorting(input.Sorting))
                 .Skip(input.SkipCount)
                 .Take(input.MaxResultCount);
-
             // 3. Fetch the list of movies
             var movies = await AsyncExecuter.ToListAsync(moviesQuery);
 
@@ -336,6 +333,36 @@ namespace MovieManagementApp.Movies
             return new PagedResultDto<MovieDto>(totalCount, movieDtos);
         }
 
+        public async Task<PagedResultDto<MovieDto>> GetTopRatedMoviesAsync(GetMovieInputDto input)
+        {
+            // 1. Get the base query for movies with sorting by rating
+            var queryable = await Repository.GetQueryableAsync();
+
+            // 2. Apply filtering if any
+            var moviesQuery = queryable
+                .OrderByDescending(m => m.AverageRating)
+                .Take(5);
+
+            // 4. Fetch the top 5 movies
+            var movies = await AsyncExecuter.ToListAsync(moviesQuery);
+            var movieDtos = new List<MovieDto>();
+            foreach (var movie in movies)
+            {
+                // Map the movie to DTO
+                var movieDto = ObjectMapper.Map<Movie, MovieDto>(movie);
+
+             
+                var posterBlob = await _blobContainer.GetAllBytesAsync(movie.PosterBlob);
+                movieDto.PosterBlob = Convert.ToBase64String(posterBlob);
+               
+                // Add the completed movie DTO to the list
+                movieDtos.Add(movieDto);
+            }
+
+            // 6. Return the top 5 movies without pagination count, as we're returning a fixed set
+            return new PagedResultDto<MovieDto>(movieDtos.Count, movieDtos);
+        }
+
         // Create Movie - with default values for certain properties
         public override async Task<MovieDto> CreateAsync([FromForm] CreateUpdateMovieDto input)
          {
@@ -344,8 +371,6 @@ namespace MovieManagementApp.Movies
 
 
             movie.AverageRating = 0;
-            movie.TotalViews = 0;
-            movie.TotalDownloads = 0;
 
             var movieBlobName = await UploadFileAsync(input.Blob, null, null);
             var posterBlobName = await UploadFileAsync(input.PosterBlob, 273, 184);
@@ -520,12 +545,7 @@ namespace MovieManagementApp.Movies
                 await _ratingRepository.DeleteAsync(rating);
             }
 
-            // Delete user interactions for this movie
-            var userMovieInteractions = await _userMovieInteractionRepository.GetListAsync(umi => umi.MovieId == id);
-            foreach (var interaction in userMovieInteractions)
-            {
-                await _userMovieInteractionRepository.DeleteAsync(interaction);
-            }
+
 
             // Delete all entries in MyList for this movie across all users
             var myListEntries = await _myListRepository.GetListAsync(m => m.MovieId == id);
@@ -603,9 +623,7 @@ namespace MovieManagementApp.Movies
         {
 
             var myAccountId = await GetMyAccountIdAsync();
-            var ratable = await IsWatchedOrDownloadedAsync(movieId);
-            if (ratable)
-            {
+           
                 var movie = await Repository.GetAsync(movieId);
                 var existingRating = await _ratingRepository.FirstOrDefaultAsync(r => r.MovieId == movieId && r.MyAccountId == myAccountId);
 
@@ -628,11 +646,7 @@ namespace MovieManagementApp.Movies
                 // Update average rating
                 movie.AverageRating = await CalculateAverageRatingAsync(movieId);
                 await Repository.UpdateAsync(movie);
-            }
-            else
-            {
-                throw new Exception("Movie must be watched or downloaded");
-            }
+            
         }
 
         // Get the current user's rating for a specific movie, or return 0 if no rating exists
@@ -676,12 +690,6 @@ namespace MovieManagementApp.Movies
 
             return await _myListRepository.AnyAsync(umi => umi.MovieId == movieId && umi.MyAccountId == myAccountId);
         }
-        public async Task<bool> IsWatchedOrDownloadedAsync(Guid movieId)
-        {
-            var myAccountId = await GetMyAccountIdAsync();
-
-            return await _userMovieInteractionRepository.AnyAsync(umi => umi.MovieId == movieId && umi.MyAccountId == myAccountId);
-        }
         // Calculate average rating
         public async Task<float> CalculateAverageRatingAsync(Guid movieId)
         {
@@ -690,44 +698,7 @@ namespace MovieManagementApp.Movies
             return (float)ratings.Average(r => r.RatingValue);
         }
 
-        // Calculate total views
-        public async Task<int> GetTotalViewsAsync(Guid movieId, DateTime? from = null, DateTime? to = null)
-        {
-            var query = await _userMovieInteractionRepository.GetQueryableAsync();
-
-            // إذا كانت تواريخ البداية والنهاية محددة
-            if (from.HasValue && to.HasValue)
-            {
-                return query.Count(umi => umi.MovieId == movieId
-                                          && umi.Interaction == InteractionType.Watched
-                                          && umi.CreationTime >= from.Value
-                                          && umi.CreationTime <= to.Value);
-            }
-
-            // إذا لم يتم تحديد نطاق زمني
-            return query.Count(umi => umi.MovieId == movieId
-                                      && umi.Interaction == InteractionType.Watched);
-        }
-
-        // Calculate total downloads
-        public async Task<int> GetTotalDownloadsAsync(Guid movieId, DateTime? from = null, DateTime? to = null)
-        {
-            var query = await _userMovieInteractionRepository.GetQueryableAsync();
-
-            // إذا كانت تواريخ البداية والنهاية محددة
-            if (from.HasValue && to.HasValue)
-            {
-                return query.Count(umi => umi.MovieId == movieId
-                                          && umi.Interaction == InteractionType.Downloaded
-                                          && umi.CreationTime >= from.Value
-                                          && umi.CreationTime <= to.Value);
-            }
-
-            // إذا لم يتم تحديد نطاق زمني
-            return query.Count(umi => umi.MovieId == movieId
-                                      && umi.Interaction == InteractionType.Downloaded);
-        }
-
+  
         public async Task<ListResultDto<ActorLookupDto>> GetActorLookupAsync(string searchTerm)
         {
             // الحصول على استعلام الممثلين من المستودع
@@ -792,6 +763,33 @@ namespace MovieManagementApp.Movies
         public async Task<byte[]> GetBytesAsync()
         {
             return await _blobContainer.GetAllBytesOrNullAsync("my-blob-1");
+        }
+
+        private static Expression<Func<Movie, object>> NormalizeSorting(string sorting)
+        {
+            // Default sorting by CreationTime if no sorting parameter is provided
+            if (sorting.IsNullOrEmpty() || sorting.Contains("creationTime", StringComparison.OrdinalIgnoreCase))
+            {
+                return movie => movie.CreationTime;
+            }
+
+            if (sorting.Contains("title", StringComparison.OrdinalIgnoreCase))
+            {
+                return movie => movie.Title;
+            }
+
+            if (sorting.Contains("duration", StringComparison.OrdinalIgnoreCase))
+            {
+                return movie => movie.Duration;
+            }
+
+            if (sorting.Contains("averageRating", StringComparison.OrdinalIgnoreCase))
+            {
+                return movie => movie.AverageRating;
+            }
+
+            // Default to CreationTime if the sorting parameter is not recognized
+            return movie => movie.CreationTime;
         }
 
     }

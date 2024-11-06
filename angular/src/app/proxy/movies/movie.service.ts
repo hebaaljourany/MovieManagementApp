@@ -95,20 +95,11 @@ export class MovieService {
     { apiName: this.apiName });
   
 
-  getTotalDownloads = (movieId: string, from?: string, to?: string) =>
-    this.restService.request<any, number>({
+  getTopRatedMovies = (input: GetMovieInputDto) =>
+    this.restService.request<any, PagedResultDto<MovieDto>>({
       method: 'GET',
-      url: `/api/app/movie/total-downloads/${movieId}`,
-      params: { from, to },
-    },
-    { apiName: this.apiName });
-  
-
-  getTotalViews = (movieId: string, from?: string, to?: string) =>
-    this.restService.request<any, number>({
-      method: 'GET',
-      url: `/api/app/movie/total-views/${movieId}`,
-      params: { from, to },
+      url: '/api/app/movie/top-rated-movies',
+      params: { filter: input.filter, actorId: input.actorId, categoryId: input.categoryId, sorting: input.sorting, skipCount: input.skipCount, maxResultCount: input.maxResultCount },
     },
     { apiName: this.apiName });
   
@@ -125,14 +116,6 @@ export class MovieService {
     this.restService.request<any, boolean>({
       method: 'POST',
       url: `/api/app/movie/is-in-my-list/${movieId}`,
-    },
-    { apiName: this.apiName });
-  
-
-  isWatchedOrDownloaded = (movieId: string) =>
-    this.restService.request<any, boolean>({
-      method: 'POST',
-      url: `/api/app/movie/is-watched-or-downloaded/${movieId}`,
     },
     { apiName: this.apiName });
   

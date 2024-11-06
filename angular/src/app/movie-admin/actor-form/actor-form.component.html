@@ -2,7 +2,7 @@
 <div class="container mt-4">
   <h1 class="page-title text-center mb-4">Actor Management</h1>
 
-<div class="card">
+<div class="card" *abpPermission="'MovieManagementApp.Actors.Create'">
     <div class="card-header">
       <div class="row">
         <div class="col col-md-6">
@@ -12,7 +12,7 @@
           <div class="text-lg-end pt-2">
             <button id="create" class="btn btn-primary" type="button" (click)="createActor()">
               <i class="fa fa-plus mr-1"></i>
-              <span>{{ "::NewActor" | abpLocalization }}</span>
+              <span>{{ "New Actor" }}</span>
             </button>
           </div>
 
@@ -22,7 +22,7 @@
       <div class="card-body" *ngIf="!loadingData" >
          <ngx-datatable [rows]="actor.items" [count]="actor.totalCount" [list]="list" default>
           <ngx-datatable-column
-            [name]="'::Actions' | abpLocalization"
+            [name]="'Actions' "
             [maxWidth]="150"
             [sortable]="false"
           >
@@ -34,24 +34,24 @@
                   aria-haspopup="true"
                   ngbDropdownToggle
                 >
-                  <i class="fa fa-cog mr-1"></i>{{ '::Actions' | abpLocalization }}
+                  <i class="fa fa-cog mr-1"></i>{{ 'Actions'}}
                 </button>
                 <div ngbDropdownMenu>
                   <button ngbDropdownItem (click)="editActor(row.id)">
-                    {{ '::Edit' | abpLocalization }}
+                    {{ 'Edit'  }}
                   </button>
                   <button ngbDropdownItem (click)="delete(row.id)">
-                    {{ '::Delete' | abpLocalization }}
+                    {{ 'Delete'  }}
                 </button>
                 </div>
               </div>
             </ng-template>
           </ngx-datatable-column>
   
-          <ngx-datatable-column   [name]="'::ActorName' | abpLocalization">
+          <ngx-datatable-column   [name]="'Actor Name'" [sortable]="true">
             {{actor.items.ActorName | json}}
           </ngx-datatable-column>
-          <ngx-datatable-column [name]="'::ActorImage' | abpLocalization" [maxWidth]="150">
+          <ngx-datatable-column [name]="'Actor Image'" [maxWidth]="150" [sortable]="false">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <img *ngIf="row.thumbnail" [src]="row.thumbnail" alt="Actor Image" style="width: 50px; height: auto;" />
             </ng-template>
@@ -63,14 +63,14 @@
     </div>
     <abp-modal [(visible)]="isModalOpen">
       <ng-template #abpHeader>
-        <h3>{{ (selectedActor.id ? '::Edit' : '::NewActor' ) | abpLocalization }}</h3>
+        <h3>{{ (selectedActor.id ? 'Edit' : 'New Actor' ) }}</h3>
       </ng-template>
     
       
       <ng-template #abpBody>
         <form [formGroup]="form" (ngSubmit)="save()">
           <div class="form-group">
-            <label for="actor-name">ActorName</label><span> * </span>
+            <label for="actor-name">Actor Name</label><span> * </span>
             <input type="text" id="actor-name" class="form-control" formControlName="actorName" autofocus />
           </div>
           <div class="form-group">
@@ -85,13 +85,13 @@
     
       <ng-template #abpFooter>
         <button type="button" class="btn btn-secondary" abpClose>
-            {{ '::Close' | abpLocalization }}
+            {{ 'Close'}}
         </button>
       
         <!--added save button-->
         <button class="btn btn-primary" (click)="save()" [disabled]="form.invalid">
               <i class="fa fa-check mr-1"></i>
-              {{ '::Save' | abpLocalization }}
+              {{ 'Save' }}
         </button>
       </ng-template>
     </abp-modal>

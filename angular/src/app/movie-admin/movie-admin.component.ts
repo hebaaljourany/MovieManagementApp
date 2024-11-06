@@ -6,6 +6,7 @@ import { ListService, PagedResultDto,  } from '@abp/ng.core'; // ABP services fo
 import { CategoryLookupDto } from '@proxy/movies';
 import { ActorLookupDto } from '@proxy/movies';
 import { debounceTime, map, switchMap, distinctUntilChanged } from 'rxjs/operators';
+import { ConfirmationService, Confirmation } from '@abp/ng.theme.shared';
 
 
 @Component({
@@ -37,6 +38,8 @@ export class MovieAdminComponent implements OnInit {
     private movieService: MovieService, // Injecting Movie Service
     private router: Router, // Injecting Router to navigate
     public readonly list: ListService, // ListService for managing queries
+    private confirmation: ConfirmationService // inject the ConfirmationService
+
 
   ) {}
 
@@ -139,9 +142,11 @@ searchMoviesByName(actorName: string):void{
 
   // Method to delete a movie
   delete(movieId: string): void {
-    // Call delete movie service
-    this.movieService.delete(movieId).subscribe(() => {
-      this.ngOnInit(); // Refresh the movie list after deletion
+    this.confirmation.warn('Are You Sure To Delete This Movie', 'Are You Sure').subscribe((status) => {
+      if (status === Confirmation.Status.confirm) {
+        this.movieService.delete(movieId).subscribe(() => this.list.get());
+
+      }
     });
   }
 
