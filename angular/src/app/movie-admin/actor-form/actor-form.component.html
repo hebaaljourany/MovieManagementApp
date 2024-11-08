@@ -2,7 +2,7 @@
 <div class="container mt-4">
   <h1 class="page-title text-center mb-4">Actor Management</h1>
 
-<div class="card" *abpPermission="'MovieManagementApp.Actors.Create'">
+<div class="card" >
     <div class="card-header">
       <div class="row">
         <div class="col col-md-6">
@@ -10,7 +10,7 @@
         <div class="text-end col col-md-6">
           <!-- Add the "new actor" button here -->
           <div class="text-lg-end pt-2">
-            <button id="create" class="btn btn-primary" type="button" (click)="createActor()">
+            <button id="create" class="btn btn-primary" type="button" (click)="createActor()" *abpPermission="'MovieManagementApp.Actors.Create'">
               <i class="fa fa-plus mr-1"></i>
               <span>{{ "New Actor" }}</span>
             </button>

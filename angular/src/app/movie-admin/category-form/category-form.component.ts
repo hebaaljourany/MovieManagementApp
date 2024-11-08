@@ -4,6 +4,7 @@ import { CategoryService, CategoryDto } from '@proxy/categories';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NgbDateNativeAdapter, NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmationService, Confirmation } from '@abp/ng.theme.shared';
+import { catchError, of } from 'rxjs';
 
 
 @Component({
@@ -57,9 +58,13 @@ export class CategoryFormComponent implements OnInit {
   delete(id: string) {
     this.confirmation.warn('Are You Sure To Delete This Category', 'Are You Sure').subscribe((status) => {
       if (status === Confirmation.Status.confirm) {
-        this.categoryService.delete(id).subscribe(() => this.list.get());
-
-      }
+        this.categoryService.delete(id).pipe(
+            catchError((error) => {
+                this.confirmation.error('Failed to delete the category. Please remove the associated movies first.', 'Delete Failed', { hideYesBtn: true });
+                return of(null);  // تعيد observable فارغة لعدم توقف التدفق
+            })
+        ).subscribe(() => this.list.get());
+    }
     });
   }
 
@@ -78,7 +83,13 @@ export class CategoryFormComponent implements OnInit {
       ? this.categoryService.update(this.selectedCategory.id, this.form.value)
       : this.categoryService.create(this.form.value);
 
-    request.subscribe(() => {
+    request.pipe(
+      catchError((error) => {
+          // عرض رسالة خطأ للمستخدم في حالة فشل العملية
+          this.confirmation.error('Failed to save the category. Category name might already exist.', 'Save Failed', { hideYesBtn: true });
+          return of(null);  // إرجاع observable فارغ لضمان استمرار التدفق
+      })
+  ).subscribe(() => {
       this.isModalOpen = false;
       this.form.reset();
       this.list.get();

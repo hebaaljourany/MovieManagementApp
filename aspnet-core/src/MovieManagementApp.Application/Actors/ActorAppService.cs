@@ -86,18 +86,23 @@ namespace MovieManagementApp.Actors
             return actorDto;
 
         }
-        public override async Task<ActorDto> CreateAsync([FromForm] CreateUpdateActorDto input)
+        private async Task CheckActorNameExistsAsync(string actorName, Guid? id = null)
         {
-            var existingActor = await Repository
-                .FirstOrDefaultAsync(a => EF.Functions.Like(a.ActorName.ToLower(), input.ActorName.ToLower()));
+            var existingActor = await _actorRepository.FirstOrDefaultAsync(
+                a => a.ActorName.ToLower() == actorName.ToLower() && (!id.HasValue || a.Id != id.Value)
+            );
 
             if (existingActor != null)
             {
-
                 throw new UserFriendlyException("An actor with this name already exists. Please choose a different name.");
             }
-            else
-            {
+        }
+
+        public override async Task<ActorDto> CreateAsync([FromForm] CreateUpdateActorDto input)
+        {
+
+                await CheckActorNameExistsAsync(input.ActorName);
+
                 var actor = ObjectMapper.Map<CreateUpdateActorDto, Actor>(input);
 
 
@@ -114,7 +119,7 @@ namespace MovieManagementApp.Actors
 
                 return ObjectMapper.Map<Actor, ActorDto>(actor);
 
-            }
+           
 
         }
         public override async Task<ActorDto> UpdateAsync(Guid id, [FromForm] CreateUpdateActorDto input)
@@ -123,14 +128,10 @@ namespace MovieManagementApp.Actors
             {
                 throw new ArgumentNullException(nameof(input), "Input cannot be null.");
             }
+            await CheckActorNameExistsAsync(input.ActorName, id);
 
             var actor = await Repository.GetAsync(id);
-            // تحقق من وجود ممثل آخر بنفس الاسم
-            var existingActor = await Repository.FirstOrDefaultAsync(a => a.ActorName.Equals(input.ActorName, StringComparison.OrdinalIgnoreCase) && a.Id != id);
-            if (existingActor != null)
-            {
-                throw new UserFriendlyException("An actor with this name already exists. Please choose a different name.");
-            }
+        
             actor.ActorName = input.ActorName;
             string actorBlobName;
 
@@ -189,5 +190,6 @@ namespace MovieManagementApp.Actors
 
             await base.DeleteAsync(id);
         }
+
     }
 }

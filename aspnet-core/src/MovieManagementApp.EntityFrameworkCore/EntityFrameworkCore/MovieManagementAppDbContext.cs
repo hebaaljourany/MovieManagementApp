@@ -184,6 +184,7 @@ public class MovieManagementAppDbContext :
             b.ConfigureByConvention(); //auto configure for the base class props
             b.HasKey(x => x.Id);
             b.Property(x => x.ActorName).IsRequired();
+
         });
         builder.Entity<MovieCategory>(b =>
         {

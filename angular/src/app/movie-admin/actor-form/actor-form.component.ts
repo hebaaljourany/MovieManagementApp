@@ -6,6 +6,7 @@ import { NgbDateNativeAdapter, NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap
 import { ConfirmationService, Confirmation } from '@abp/ng.theme.shared';
 import { CreateUpdateActorDto } from '@proxy/application/contracts/actors';
 import { FileUploadService } from 'src/app/services/upload.service';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-actor-form',
@@ -65,13 +66,16 @@ export class ActorFormComponent implements OnInit {
 
   delete(id: string) {
     this.confirmation.warn('Are You Sure To Delete This Actor', 'Are You Sure').subscribe((status) => {
-      if (status === Confirmation.Status.confirm) {
-        this.actorService.delete(id).subscribe(() => this.list.get());
-
-      
-      }
+        if (status === Confirmation.Status.confirm) {
+            this.actorService.delete(id).pipe(
+                catchError((error) => {
+                    this.confirmation.error('Failed to delete the actor. Please remove the associated movies first.', 'Delete Failed', { hideYesBtn: true });
+                    return of(null);  // تعيد observable فارغة لعدم توقف التدفق
+                })
+            ).subscribe(() => this.list.get());
+        }
     });
-  }
+}
 
   buildForm() {
     this.form = this.fb.group({
@@ -111,7 +115,13 @@ export class ActorFormComponent implements OnInit {
       ? this.fileUploadService.updateActor(this.selectedActor.id, form_data)
       : this.fileUploadService.createActor(form_data);
 
-    request.subscribe(() => {
+    request.pipe(
+      catchError((error) => {
+          // عرض رسالة خطأ للمستخدم في حالة فشل العملية
+          this.confirmation.error('Failed to save the actor. Actor name might already exist.', 'Save Failed', { hideYesBtn: true });
+          return of(null);  // إرجاع observable فارغ لضمان استمرار التدفق
+      })
+  ).subscribe(() => {
       this.isModalOpen = false;
       this.form.reset();
       this.list.get();

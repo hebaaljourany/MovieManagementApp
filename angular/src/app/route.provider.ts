@@ -48,7 +48,7 @@ function configureRoutes(routesService: RoutesService) {
         iconClass: 'fas fa-user',  // Actor icon
         order: 6,
         layout: eLayoutType.application,
-        requiredPolicy : "MovieManagementApp.Actors"
+        requiredPolicy : "MovieManagementApp.Actors.Create"
 
       },
       {

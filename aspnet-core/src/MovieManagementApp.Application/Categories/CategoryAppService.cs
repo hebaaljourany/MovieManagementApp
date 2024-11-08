@@ -1,4 +1,5 @@
-﻿using MovieManagementApp.Application.Contracts.Categories;
+﻿using MovieManagementApp.Actors;
+using MovieManagementApp.Application.Contracts.Categories;
 using MovieManagementApp.MovieCategories;
 using MovieManagementApp.Permissions;
 using System;
@@ -23,14 +24,19 @@ namespace MovieManagementApp.Categories
         ICategoryAppService // Implement the ICategoryAppService
     {
         private readonly IRepository<MovieCategory, Guid> _movieCategoryRepository;
+        private readonly ICategoryRepository _categoryRepository;
+
 
         public CategoryAppService(
             IRepository<Category, Guid> repository,
+            ICategoryRepository categoryRepository,
             IRepository<MovieCategory, Guid> movieCategoryRepository
 
 )
             : base(repository)
         {
+            _categoryRepository = categoryRepository;
+
             GetPolicyName = MovieManagementAppPermissions.Categories.Default;
             GetListPolicyName = MovieManagementAppPermissions.Categories.Default;
             CreatePolicyName = MovieManagementAppPermissions.Categories.Create;
@@ -40,15 +46,22 @@ namespace MovieManagementApp.Categories
 
         }
 
+        private async Task CheckCategoryNameExistsAsync(string categoryName, Guid? id = null)
+        {
+            var existingCategory = await _categoryRepository.FirstOrDefaultAsync(
+                a => a.CategoryName.ToLower() == categoryName.ToLower() && (!id.HasValue || a.Id != id.Value)
+            );
+
+            if (existingCategory != null)
+            {
+                throw new UserFriendlyException("An category with this name already exists. Please choose a different name.");
+            }
+        }
 
         public override async Task<CategoryDto> CreateAsync(CreateUpdateCategoryDto input)
         {
-            // تحقق من وجود تصنيف بنفس الاسم
-            var existingCategory = await Repository.FirstOrDefaultAsync(c => c.CategoryName.Equals(input.CategoryName, StringComparison.OrdinalIgnoreCase));
-            if (existingCategory != null)
-            {
-                throw new UserFriendlyException("A category with this name already exists. Please choose a different name.");
-            }
+            await CheckCategoryNameExistsAsync(input.CategoryName);
+
 
             var category = ObjectMapper.Map<CreateUpdateCategoryDto, Category>(input);
             category = await Repository.InsertAsync(category, true);
@@ -58,12 +71,8 @@ namespace MovieManagementApp.Categories
 
         public override async Task<CategoryDto> UpdateAsync(Guid id, CreateUpdateCategoryDto input)
         {
-            // تحقق من وجود تصنيف بنفس الاسم ولكن استثني التصنيف الحالي
-            var existingCategory = await Repository.FirstOrDefaultAsync(c => c.CategoryName.Equals(input.CategoryName, StringComparison.OrdinalIgnoreCase) && c.Id != id);
-            if (existingCategory != null)
-            {
-                throw new UserFriendlyException("A category with this name already exists. Please choose a different name.");
-            }
+            await CheckCategoryNameExistsAsync(input.CategoryName, id);
+
 
             var category = await Repository.GetAsync(id);
             category.CategoryName = input.CategoryName;
