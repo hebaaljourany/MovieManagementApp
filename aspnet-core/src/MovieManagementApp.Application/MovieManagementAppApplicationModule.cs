@@ -40,9 +40,9 @@ namespace MovieManagementApp;
             {
                 container.UseMinio(minio =>
                 {
-                    minio.EndPoint = "169.254.90.214:9000";
-                    minio.AccessKey = "Iks6MV2AyvqOCQ3vQYL1";
-                    minio.SecretKey = "JiySf6DVeB35kcYiPsRUq9rGyvdjoW2qKqPxP3lw";
+                    minio.EndPoint = "192.168.1.105:9000";
+                    minio.AccessKey = "fwJK7vP89dcRIZ1Di358";
+                    minio.SecretKey = "CC5q378K4u2Q8NjO0LvJgWZR59xwvnztVmtkJQVR";
                     minio.BucketName = "movies";
                 });
             });

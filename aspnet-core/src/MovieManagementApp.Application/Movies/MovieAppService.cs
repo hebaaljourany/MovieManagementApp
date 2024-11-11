@@ -744,7 +744,11 @@ namespace MovieManagementApp.Movies
         }
         private async Task<string> UploadFileAsync(IRemoteStreamContent blob, int? height, int? width)
         {
-            var name = blob.FileName + " - " + Guid.NewGuid().ToString();
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(blob.FileName);
+
+            // Get the file extension (including the dot)
+            string fileExtension = Path.GetExtension(blob.FileName);
+            var name = fileNameWithoutExtension + " - " + Guid.NewGuid().ToString() + fileExtension;
 
             if (height.HasValue && width.HasValue)
             {

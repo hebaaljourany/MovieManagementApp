@@ -8,6 +8,7 @@ import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import {  IRemoteStreamContent } from '@proxy/volo/abp/content';
 import { CreateUpdateMovieDto } from '@proxy/application/contracts/movies';
 import { FileUploadService } from 'src/app/services/upload.service';
+import { ToasterService } from '@abp/ng.theme.shared';
 
 @Component({
   selector: 'app-movie-form',
@@ -42,7 +43,8 @@ export class MovieFormComponent implements OnInit {
     private movieService: MovieService,
     private router: Router,
     private route: ActivatedRoute,
-    private fileUploadService: FileUploadService
+    private fileUploadService: FileUploadService,
+    private toasterService: ToasterService
     
   ) {}
 
@@ -248,9 +250,12 @@ export class MovieFormComponent implements OnInit {
       // إذا كان إنشاء فيلم جديد
       this.fileUploadService.createMovie(form_data).subscribe(
         (response) => {
+          this.toasterService.success("Movie added successfuly");
+          this.router.navigate(['/movie-admin']);
         },
         (error) => {
-          console.error('An error occurred while creating the movie:', error);
+          this.toasterService.error('An error occurred while creating the movie:', error);
+          //console.error('An error occurred while creating the movie:', error);
         }
       );
     }
